@@ -1,0 +1,480 @@
+{
+  "project": "AutoDrama",
+  "description": "自动化短剧制作系统：剧本创作 → 分镜生成 → AI视频片段 → 拼接成片",
+  "tasks": [
+    {
+      "id": 1,
+      "title": "项目初始化",
+      "description": "创建 Next.js 项目并配置基础依赖",
+      "steps": [
+        "在 autodrama/ 目录创建 Next.js 15 项目 (App Router + TypeScript)",
+        "配置 Tailwind CSS",
+        "安装核心依赖: @supabase/supabase-js, @supabase/ssr, clsx, tailwind-merge",
+        "创建 .env.local 模板文件（包含所有必需的环境变量）",
+        "创建 lib/utils.ts 工具函数文件"
+      ],
+      "passes": false
+    },
+    {
+      "id": 2,
+      "title": "Supabase 数据库 Schema",
+      "description": "创建数据库表结构",
+      "steps": [
+        "创建 projects 表 (id, user_id, title, stage, created_at, updated_at)",
+        "创建 scripts 表 (id, project_id, content, ai_generated, created_at, updated_at)",
+        "创建 scenes 表 (id, project_id, order_index, scene_description, character_description, dialogue, asset_ids, video_status, confirmed, created_at)",
+        "创建 assets 表 (id, project_id, name, description, image_url, asset_type, created_at)",
+        "创建 videos 表 (id, scene_id, url, storage_path, duration, task_id, created_at)",
+        "创建 final_videos 表 (id, project_id, url, storage_path, duration, status, created_at)",
+        "设置外键关系和索引",
+        "创建 Storage bucket: project-media",
+        "编写 SQL migration 文件到 supabase/migrations/"
+      ],
+      "passes": false
+    },
+    {
+      "id": 3,
+      "title": "Supabase 客户端封装",
+      "description": "创建服务端和客户端的 Supabase 客户端",
+      "steps": [
+        "创建 lib/supabase/server.ts (服务端客户端)",
+        "创建 lib/supabase/client.ts (浏览器客户端)",
+        "创建 lib/supabase/middleware.ts (中间件)",
+        "更新 middleware.ts 集成 Supabase 中间件"
+      ],
+      "passes": false
+    },
+    {
+      "id": 4,
+      "title": "用户认证 - 登录页面",
+      "description": "实现用户登录功能",
+      "steps": [
+        "创建 app/login/page.tsx 登录页面",
+        "创建 components/auth/LoginForm.tsx 登录表单组件",
+        "实现邮箱+密码登录",
+        "登录成功后跳转到首页",
+        "显示登录错误信息"
+      ],
+      "passes": false
+    },
+    {
+      "id": 5,
+      "title": "用户认证 - 注册页面",
+      "description": "实现用户注册功能",
+      "steps": [
+        "创建 app/register/page.tsx 注册页面",
+        "创建 components/auth/RegisterForm.tsx 注册表单组件",
+        "实现邮箱+密码注册",
+        "注册成功后跳转到登录页",
+        "显示注册错误信息"
+      ],
+      "passes": false
+    },
+    {
+      "id": 6,
+      "title": "用户认证 - 登出功能",
+      "description": "实现用户登出功能",
+      "steps": [
+        "创建 components/auth/LogoutButton.tsx 登出按钮组件",
+        "实现登出逻辑",
+        "登出后跳转到登录页"
+      ],
+      "passes": false
+    },
+    {
+      "id": 7,
+      "title": "认证保护中间件",
+      "description": "保护需要登录的页面",
+      "steps": [
+        "配置 middleware 保护路由: /projects, /create",
+        "未登录用户访问受保护页面时重定向到 /login",
+        "已登录用户访问 /login 和 /register 时重定向到首页"
+      ],
+      "passes": false
+    },
+    {
+      "id": 8,
+      "title": "智谱AI API 封装",
+      "description": "封装智谱AI GLM模型调用",
+      "steps": [
+        "创建 lib/ai/zhipu.ts",
+        "实现 chat completions API 调用",
+        "实现错误处理和重试逻辑",
+        "编写 script-generation prompt (剧本创作)",
+        "编写 scene-generation prompt (分镜生成，包含资产提取)",
+        "创建 types/ai.ts 定义类型"
+      ],
+      "passes": false
+    },
+    {
+      "id": 9,
+      "title": "视频生成 API 封装",
+      "description": "封装火山引擎 Seedance 视频生成",
+      "steps": [
+        "创建 lib/ai/volc-video.ts",
+        "实现视频任务创建 API",
+        "实现视频任务状态查询 API",
+        "实现错误处理和重试逻辑",
+        "添加类型定义"
+      ],
+      "passes": false
+    },
+    {
+      "id": 10,
+      "title": "视频拼接服务",
+      "description": "实现视频拼接功能",
+      "steps": [
+        "创建 lib/video/concat.ts",
+        "研究并选择拼接方案 (FFmpeg.wasm 或云端服务)",
+        "实现视频片段顺序编排",
+        "实现拼接任务执行",
+        "添加类型定义"
+      ],
+      "passes": false
+    },
+    {
+      "id": 11,
+      "title": "项目数据访问层",
+      "description": "创建项目的 CRUD 操作",
+      "steps": [
+        "创建 lib/db/projects.ts",
+        "实现 createProject() 创建项目",
+        "实现 getProjects() 获取用户项目列表",
+        "实现 getProjectById() 获取单个项目",
+        "实现 updateProject() 更新项目",
+        "实现 updateProjectStage() 更新项目阶段",
+        "实现 deleteProject() 删除项目"
+      ],
+      "passes": false
+    },
+    {
+      "id": 12,
+      "title": "剧本数据访问层",
+      "description": "创建剧本的 CRUD 操作",
+      "steps": [
+        "创建 lib/db/scripts.ts",
+        "实现 createScript() 创建剧本",
+        "实现 getScriptByProjectId() 获取项目剧本",
+        "实现 updateScript() 更新剧本",
+        "实现 deleteScript() 删除剧本"
+      ],
+      "passes": false
+    },
+    {
+      "id": 13,
+      "title": "分镜数据访问层",
+      "description": "创建分镜的 CRUD 操作",
+      "steps": [
+        "创建 lib/db/scenes.ts",
+        "实现 createScenes() 批量创建分镜",
+        "实现 getScenesByProjectId() 获取项目的分镜列表",
+        "实现 updateScene() 更新分镜",
+        "实现 confirmScene() 确认分镜",
+        "实现 confirmAllScenes() 确认所有分镜",
+        "实现 deleteScenesByProjectId() 删除项目的所有分镜"
+      ],
+      "passes": false
+    },
+    {
+      "id": 14,
+      "title": "资产数据访问层",
+      "description": "创建形象的 CRUD 操作",
+      "steps": [
+        "创建 lib/db/assets.ts",
+        "实现 createAsset() 创建资产",
+        "实现 getAssetsByProjectId() 获取项目资产列表",
+        "实现 updateAsset() 更新资产",
+        "实现 deleteAsset() 删除资产"
+      ],
+      "passes": false
+    },
+    {
+      "id": 15,
+      "title": "媒体数据访问层",
+      "description": "创建视频的数据访问",
+      "steps": [
+        "创建 lib/db/media.ts",
+        "实现 createVideo() 保存视频记录",
+        "实现 getVideoBySceneId() 获取分镜的视频",
+        "实现 getFinalVideo() 获取最终成片",
+        "实现 Supabase Storage 上传功能",
+        "实现 Supabase Storage 删除功能"
+      ],
+      "passes": false
+    },
+    {
+      "id": 16,
+      "title": "项目 API - CRUD",
+      "description": "实现项目的增删改查 API",
+      "steps": [
+        "创建 app/api/projects/route.ts",
+        "POST /api/projects 创建项目",
+        "GET /api/projects 获取项目列表",
+        "创建 app/api/projects/[id]/route.ts",
+        "GET /api/projects/:id 获取项目详情",
+        "PATCH /api/projects/:id 更新项目",
+        "DELETE /api/projects/:id 删除项目"
+      ],
+      "passes": false
+    },
+    {
+      "id": 17,
+      "title": "剧本 API",
+      "description": "实现剧本管理 API",
+      "steps": [
+        "创建 app/api/projects/[id]/script/route.ts",
+        "GET 获取剧本",
+        "POST 创建/更新剧本",
+        "POST /api/generate/script AI生成剧本",
+        "验证用户是项目所有者"
+      ],
+      "passes": false
+    },
+    {
+      "id": 18,
+      "title": "分镜 API",
+      "description": "实现分镜生成和管理 API",
+      "steps": [
+        "创建 app/api/projects/[id]/scenes/route.ts",
+        "GET 获取分镜列表",
+        "POST /api/generate/scenes 生成分镜",
+        "调用智谱AI 根据剧本生成分镜（含资产）",
+        "解析返回的 JSON，提取场景、人物、对话、资产",
+        "创建/更新资产记录",
+        "保存分镜到数据库",
+        "更新项目 stage 为 'scenes'"
+      ],
+      "passes": false
+    },
+    {
+      "id": 19,
+      "title": "视频生成 API",
+      "description": "实现视频生成 API",
+      "steps": [
+        "创建 app/api/generate/video/[sceneId]/route.ts",
+        "POST 为单个分镜创建视频任务",
+        "获取分镜信息（场景、人物描述）",
+        "调用火山引擎视频生成 API",
+        "保存 task_id，更新 video_status 为 'processing'",
+        "创建 app/api/generate/video/[taskId]/route.ts",
+        "GET 查询视频任务状态",
+        "任务成功后下载视频并上传到 Storage",
+        "保存视频记录，更新 video_status 为 'completed'",
+        "创建 app/api/generate/videos/route.ts",
+        "POST 批量创建所有分镜视频任务"
+      ],
+      "passes": false
+    },
+    {
+      "id": 20,
+      "title": "视频拼接 API",
+      "description": "实现视频拼接成片 API",
+      "steps": [
+        "创建 app/api/projects/[id]/concat/route.ts",
+        "POST 触发拼接任务",
+        "获取所有已确认分镜的视频",
+        "按顺序拼接视频",
+        "上传最终成片到 Storage",
+        "更新项目 stage 为 'completed'",
+        "GET 查询拼接状态"
+      ],
+      "passes": false
+    },
+    {
+      "id": 21,
+      "title": "首页 - UI 实现",
+      "description": "实现首页界面",
+      "steps": [
+        "更新 app/page.tsx 首页",
+        "显示欢迎信息和产品介绍",
+        "添加「创建新项目」按钮",
+        "添加「查看我的项目」按钮",
+        "顶部导航栏（登录状态、用户信息、登出按钮）",
+        "创建 components/layout/Header.tsx 导航栏组件"
+      ],
+      "passes": false
+    },
+    {
+      "id": 22,
+      "title": "项目列表页 - UI 实现",
+      "description": "实现项目列表页面",
+      "steps": [
+        "创建 app/projects/page.tsx 项目列表页",
+        "显示用户的所有项目（卡片形式）",
+        "每个卡片显示：标题、阶段、创建时间",
+        "点击卡片跳转到项目详情",
+        "添加「创建新项目」按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 23,
+      "title": "创建项目页 - UI 实现",
+      "description": "实现创建项目页面",
+      "steps": [
+        "创建 app/create/page.tsx 创建项目页",
+        "创建 components/project/CreateProjectForm.tsx 表单组件",
+        "标题输入框",
+        "提交后创建项目并跳转到剧本编辑页"
+      ],
+      "passes": false
+    },
+    {
+      "id": 24,
+      "title": "剧本编辑器 - UI 实现",
+      "description": "实现剧本编辑页面",
+      "steps": [
+        "创建 app/projects/[id]/script/page.tsx 剧本编辑页",
+        "创建 components/script/ScriptEditor.tsx 编辑器组件",
+        "剧本内容输入框（多行文本）",
+        "「AI辅助创作」按钮",
+        "自动保存功能",
+        "「生成分镜」按钮",
+        "创建完成后跳转到分镜编辑页"
+      ],
+      "passes": false
+    },
+    {
+      "id": 25,
+      "title": "分镜编辑器 - UI 实现",
+      "description": "实现分镜编辑页面",
+      "steps": [
+        "创建 app/projects/[id]/scenes/page.tsx 分镜编辑页",
+        "创建 components/scene/SceneCard.tsx 分镜卡片",
+        "显示：序号、场景描述、人物描述、对话、关联资产",
+        "支持编辑各字段",
+        "显示「重新生成」按钮",
+        "显示「确认」按钮",
+        "创建 components/scene/SceneList.tsx 分镜列表",
+        "底部显示「确认所有分镜」按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 26,
+      "title": "资产管理界面 - UI 实现",
+      "description": "实现资产管理页面",
+      "steps": [
+        "创建 app/projects/[id]/assets/page.tsx 资产管理页",
+        "创建 components/asset/AssetCard.tsx 资产卡片",
+        "显示：资产名称、类型、图片、描述",
+        "支持上传图片",
+        "支持编辑资产信息",
+        "创建 components/asset/AssetList.tsx 资产列表"
+      ],
+      "passes": false
+    },
+    {
+      "id": 27,
+      "title": "视频生成页面 - UI 实现",
+      "description": "实现视频生成页面",
+      "steps": [
+        "创建 app/projects/[id]/videos/page.tsx 视频生成页",
+        "创建 components/video/VideoCard.tsx 视频卡片",
+        "显示：分镜序号、描述、视频/加载状态",
+        "显示视频生成状态 (pending/processing/completed/failed)",
+        "processing 状态显示进度动画",
+        "每张卡片显示「重新生成」和「确认」按钮",
+        "创建 components/video/VideoList.tsx 视频列表",
+        "顶部显示「生成所有视频」按钮",
+        "底部显示「确认所有视频」按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 28,
+      "title": "最终成片页面 - UI 实现",
+      "description": "实现最终成片页面",
+      "steps": [
+        "创建 app/projects/[id]/final/page.tsx 成片页面",
+        "显示所有分镜的视频预览",
+        "显示「拼接成片」按钮",
+        "显示拼接进度",
+        "显示最终成片预览",
+        "显示「下载」按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 29,
+      "title": "项目详情页 - 阶段指示器",
+      "description": "实现项目详情页阶段指示器",
+      "steps": [
+        "创建 components/project/StageIndicator.tsx 阶段指示器",
+        "显示阶段: draft → script → scenes → videos → completed",
+        "高亮当前阶段",
+        "已完成阶段显示勾选",
+        "点击可跳转到对应阶段页面"
+      ],
+      "passes": false
+    },
+    {
+      "id": 30,
+      "title": "实时状态更新",
+      "description": "实现生成状态的实时更新",
+      "steps": [
+        "实现轮询机制检查视频生成状态",
+        "视频 processing 时每 5 秒轮询一次",
+        "状态变化时自动更新 UI",
+        "显示进度条或加载动画"
+      ],
+      "passes": false
+    },
+    {
+      "id": 31,
+      "title": "错误处理和边界情况",
+      "description": "完善错误处理",
+      "steps": [
+        "创建 app/error.tsx 全局错误页面",
+        "创建 app/not-found.tsx 404 页面",
+        "创建 app/projects/[id]/error.tsx 项目错误边界",
+        "API 错误返回统一格式",
+        "前端显示友好的错误提示（Toast 组件）",
+        "生成失败时显示错误信息和重试按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 32,
+      "title": "Loading 状态",
+      "description": "添加加载状态指示",
+      "steps": [
+        "创建 app/loading.tsx 全局加载组件",
+        "创建 components/ui/Spinner.tsx 加载动画组件",
+        "创建 components/ui/Skeleton.tsx 骨架屏组件",
+        "在列表页使用骨架屏",
+        "在详情页使用加载状态",
+        "生成过程中显示加载动画"
+      ],
+      "passes": false
+    },
+    {
+      "id": 33,
+      "title": "响应式设计",
+      "description": "适配移动端",
+      "steps": [
+        "导航栏移动端适配（汉堡菜单）",
+        "项目卡片响应式布局",
+        "分镜卡片响应式布局",
+        "表单响应式布局",
+        "阶段指示器响应式布局",
+        "测试不同屏幕尺寸"
+      ],
+      "passes": false
+    },
+    {
+      "id": 34,
+      "title": "最终测试和优化",
+      "description": "完整流程测试和优化",
+      "steps": [
+        "运行 npm run lint 检查代码规范",
+        "运行 npm run build 确保构建成功",
+        "测试完整用户流程：注册→登录→创建项目→编写剧本→生成分镜→确认→生成视频→确认→拼接成片→下载",
+        "测试每一步的重新生成功能",
+        "测试错误处理",
+        "性能优化（视频懒加载等）"
+      ],
+      "passes": false
+    }
+  ]
+}
