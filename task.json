@@ -1,6 +1,6 @@
 {
   "project": "AutoDrama",
-  "description": "自动化短剧制作系统：剧本创作 → 分镜生成 → AI视频片段 → 拼接成片",
+  "description": "自动化短剧制作系统：系列大纲 → 角色场景设定 → 美术资产生成 → 剧集创作(剧本→分镜→视频→成片)",
   "tasks": [
     {
       "id": 1,
@@ -17,23 +17,38 @@
     },
     {
       "id": 2,
-      "title": "Supabase 数据库 Schema",
-      "description": "创建数据库表结构",
+      "title": "Supabase 数据库 Schema - 系列相关",
+      "description": "创建系列、大纲、角色、场景相关表",
       "steps": [
-        "创建 projects 表 (id, user_id, title, stage, created_at, updated_at)",
-        "创建 scripts 表 (id, project_id, content, ai_generated, created_at, updated_at)",
-        "创建 scenes 表 (id, project_id, order_index, scene_description, character_description, dialogue, asset_ids, video_status, confirmed, created_at)",
-        "创建 assets 表 (id, project_id, name, description, image_url, asset_type, created_at)",
-        "创建 videos 表 (id, scene_id, url, storage_path, duration, task_id, created_at)",
-        "创建 final_videos 表 (id, project_id, url, storage_path, duration, status, created_at)",
+        "创建 series 表 (id, user_id, title, description, art_style, world_setting, total_episodes, stage, created_at, updated_at)",
+        "创建 outlines 表 (id, series_id, content, episode_outlines JSON, confirmed, created_at, updated_at)",
+        "创建 characters 表 (id, series_id, name, role, appearance, personality, background, confirmed, created_at)",
+        "创建 character_images 表 (id, character_id, view_type, url, storage_path, status, created_at)",
+        "创建 world_scenes 表 (id, series_id, name, description, atmosphere, confirmed, created_at)",
+        "创建 scene_images 表 (id, world_scene_id, url, storage_path, order_index, status, created_at)",
         "设置外键关系和索引",
-        "创建 Storage bucket: project-media",
         "编写 SQL migration 文件到 supabase/migrations/"
       ],
       "passes": false
     },
     {
       "id": 3,
+      "title": "Supabase 数据库 Schema - 剧集相关",
+      "description": "创建剧集、剧本、分镜、视频相关表",
+      "steps": [
+        "创建 episodes 表 (id, series_id, episode_number, title, synopsis, stage, created_at, updated_at)",
+        "创建 scripts 表 (id, episode_id, content, ai_generated, confirmed, created_at, updated_at)",
+        "创建 episode_scenes 表 (id, episode_id, order_index, scene_description, character_description, dialogue, video_status, confirmed, created_at)",
+        "创建 scene_assets 表 (id, episode_scene_id, character_id, world_scene_id, asset_type, created_at)",
+        "创建 scene_videos 表 (id, episode_scene_id, url, storage_path, duration, task_id, status, created_at)",
+        "创建 episode_videos 表 (id, episode_id, url, storage_path, duration, status, created_at)",
+        "创建 Storage bucket: drama-media",
+        "编写 SQL migration 文件"
+      ],
+      "passes": false
+    },
+    {
+      "id": 4,
       "title": "Supabase 客户端封装",
       "description": "创建服务端和客户端的 Supabase 客户端",
       "steps": [
@@ -45,7 +60,7 @@
       "passes": false
     },
     {
-      "id": 4,
+      "id": 5,
       "title": "用户认证 - 登录页面",
       "description": "实现用户登录功能",
       "steps": [
@@ -58,7 +73,7 @@
       "passes": false
     },
     {
-      "id": 5,
+      "id": 6,
       "title": "用户认证 - 注册页面",
       "description": "实现用户注册功能",
       "steps": [
@@ -71,7 +86,7 @@
       "passes": false
     },
     {
-      "id": 6,
+      "id": 7,
       "title": "用户认证 - 登出功能",
       "description": "实现用户登出功能",
       "steps": [
@@ -82,33 +97,48 @@
       "passes": false
     },
     {
-      "id": 7,
+      "id": 8,
       "title": "认证保护中间件",
       "description": "保护需要登录的页面",
       "steps": [
-        "配置 middleware 保护路由: /projects, /create",
+        "配置 middleware 保护路由: /series, /episodes",
         "未登录用户访问受保护页面时重定向到 /login",
         "已登录用户访问 /login 和 /register 时重定向到首页"
       ],
       "passes": false
     },
     {
-      "id": 8,
+      "id": 9,
       "title": "智谱AI API 封装",
       "description": "封装智谱AI GLM模型调用",
       "steps": [
         "创建 lib/ai/zhipu.ts",
         "实现 chat completions API 调用",
         "实现错误处理和重试逻辑",
+        "编写 outline-generation prompt (大纲生成)",
         "编写 script-generation prompt (剧本创作)",
-        "编写 scene-generation prompt (分镜生成，包含资产提取)",
+        "编写 scene-generation prompt (分镜生成)",
         "创建 types/ai.ts 定义类型"
       ],
       "passes": false
     },
     {
-      "id": 9,
-      "title": "视频生成 API 封装",
+      "id": 10,
+      "title": "火山引擎图片生成 API 封装",
+      "description": "封装火山引擎 Seedream 图片生成",
+      "steps": [
+        "创建 lib/ai/volc-image.ts",
+        "实现图片生成 API 调用",
+        "实现错误处理和重试逻辑",
+        "添加角色三视图生成函数",
+        "添加场景图生成函数",
+        "添加类型定义"
+      ],
+      "passes": false
+    },
+    {
+      "id": 11,
+      "title": "火山引擎视频生成 API 封装",
       "description": "封装火山引擎 Seedance 视频生成",
       "steps": [
         "创建 lib/ai/volc-video.ts",
@@ -120,7 +150,7 @@
       "passes": false
     },
     {
-      "id": 10,
+      "id": 12,
       "title": "视频拼接服务",
       "description": "实现视频拼接功能",
       "steps": [
@@ -133,199 +163,436 @@
       "passes": false
     },
     {
-      "id": 11,
-      "title": "项目数据访问层",
-      "description": "创建项目的 CRUD 操作",
-      "steps": [
-        "创建 lib/db/projects.ts",
-        "实现 createProject() 创建项目",
-        "实现 getProjects() 获取用户项目列表",
-        "实现 getProjectById() 获取单个项目",
-        "实现 updateProject() 更新项目",
-        "实现 updateProjectStage() 更新项目阶段",
-        "实现 deleteProject() 删除项目"
-      ],
-      "passes": false
-    },
-    {
-      "id": 12,
-      "title": "剧本数据访问层",
-      "description": "创建剧本的 CRUD 操作",
-      "steps": [
-        "创建 lib/db/scripts.ts",
-        "实现 createScript() 创建剧本",
-        "实现 getScriptByProjectId() 获取项目剧本",
-        "实现 updateScript() 更新剧本",
-        "实现 deleteScript() 删除剧本"
-      ],
-      "passes": false
-    },
-    {
       "id": 13,
-      "title": "分镜数据访问层",
-      "description": "创建分镜的 CRUD 操作",
+      "title": "系列数据访问层",
+      "description": "创建系列的 CRUD 操作",
       "steps": [
-        "创建 lib/db/scenes.ts",
-        "实现 createScenes() 批量创建分镜",
-        "实现 getScenesByProjectId() 获取项目的分镜列表",
-        "实现 updateScene() 更新分镜",
-        "实现 confirmScene() 确认分镜",
-        "实现 confirmAllScenes() 确认所有分镜",
-        "实现 deleteScenesByProjectId() 删除项目的所有分镜"
+        "创建 lib/db/series.ts",
+        "实现 createSeries() 创建系列",
+        "实现 getSeriesList() 获取用户系列列表",
+        "实现 getSeriesById() 获取单个系列",
+        "实现 updateSeries() 更新系列",
+        "实现 updateSeriesStage() 更新系列阶段",
+        "实现 deleteSeries() 删除系列"
       ],
       "passes": false
     },
     {
       "id": 14,
-      "title": "资产数据访问层",
-      "description": "创建形象的 CRUD 操作",
+      "title": "大纲数据访问层",
+      "description": "创建大纲的 CRUD 操作",
       "steps": [
-        "创建 lib/db/assets.ts",
-        "实现 createAsset() 创建资产",
-        "实现 getAssetsByProjectId() 获取项目资产列表",
-        "实现 updateAsset() 更新资产",
-        "实现 deleteAsset() 删除资产"
+        "创建 lib/db/outlines.ts",
+        "实现 createOutline() 创建大纲",
+        "实现 getOutlineBySeriesId() 获取系列大纲",
+        "实现 updateOutline() 更新大纲",
+        "实现 confirmOutline() 确认大纲"
       ],
       "passes": false
     },
     {
       "id": 15,
-      "title": "媒体数据访问层",
-      "description": "创建视频的数据访问",
+      "title": "角色数据访问层",
+      "description": "创建角色的 CRUD 操作",
       "steps": [
-        "创建 lib/db/media.ts",
-        "实现 createVideo() 保存视频记录",
-        "实现 getVideoBySceneId() 获取分镜的视频",
-        "实现 getFinalVideo() 获取最终成片",
+        "创建 lib/db/characters.ts",
+        "实现 createCharacter() 创建角色",
+        "实现 getCharactersBySeriesId() 获取系列角色列表",
+        "实现 updateCharacter() 更新角色",
+        "实现 deleteCharacter() 删除角色",
+        "实现 confirmCharacter() 确认角色"
+      ],
+      "passes": false
+    },
+    {
+      "id": 16,
+      "title": "场景数据访问层",
+      "description": "创建场景的 CRUD 操作",
+      "steps": [
+        "创建 lib/db/world-scenes.ts",
+        "实现 createWorldScene() 创建场景",
+        "实现 getWorldScenesBySeriesId() 获取系列场景列表",
+        "实现 updateWorldScene() 更新场景",
+        "实现 deleteWorldScene() 删除场景",
+        "实现 confirmWorldScene() 确认场景"
+      ],
+      "passes": false
+    },
+    {
+      "id": 17,
+      "title": "美术资产数据访问层",
+      "description": "创建角色图片和场景图片的数据访问",
+      "steps": [
+        "创建 lib/db/character-images.ts",
+        "实现 createCharacterImage() 保存角色图片",
+        "实现 getCharacterImages() 获取角色所有图片",
+        "创建 lib/db/scene-images.ts",
+        "实现 createSceneImage() 保存场景图片",
+        "实现 getSceneImages() 获取场景所有图片",
         "实现 Supabase Storage 上传功能",
         "实现 Supabase Storage 删除功能"
       ],
       "passes": false
     },
     {
-      "id": 16,
-      "title": "项目 API - CRUD",
-      "description": "实现项目的增删改查 API",
-      "steps": [
-        "创建 app/api/projects/route.ts",
-        "POST /api/projects 创建项目",
-        "GET /api/projects 获取项目列表",
-        "创建 app/api/projects/[id]/route.ts",
-        "GET /api/projects/:id 获取项目详情",
-        "PATCH /api/projects/:id 更新项目",
-        "DELETE /api/projects/:id 删除项目"
-      ],
-      "passes": false
-    },
-    {
-      "id": 17,
-      "title": "剧本 API",
-      "description": "实现剧本管理 API",
-      "steps": [
-        "创建 app/api/projects/[id]/script/route.ts",
-        "GET 获取剧本",
-        "POST 创建/更新剧本",
-        "POST /api/generate/script AI生成剧本",
-        "验证用户是项目所有者"
-      ],
-      "passes": false
-    },
-    {
       "id": 18,
-      "title": "分镜 API",
-      "description": "实现分镜生成和管理 API",
+      "title": "剧集数据访问层",
+      "description": "创建剧集的 CRUD 操作",
       "steps": [
-        "创建 app/api/projects/[id]/scenes/route.ts",
-        "GET 获取分镜列表",
-        "POST /api/generate/scenes 生成分镜",
-        "调用智谱AI 根据剧本生成分镜（含资产）",
-        "解析返回的 JSON，提取场景、人物、对话、资产",
-        "创建/更新资产记录",
-        "保存分镜到数据库",
-        "更新项目 stage 为 'scenes'"
+        "创建 lib/db/episodes.ts",
+        "实现 createEpisode() 创建剧集",
+        "实现 getEpisodesBySeriesId() 获取系列剧集列表",
+        "实现 getEpisodeById() 获取单个剧集",
+        "实现 updateEpisode() 更新剧集",
+        "实现 updateEpisodeStage() 更新剧集阶段",
+        "实现 deleteEpisode() 删除剧集"
       ],
       "passes": false
     },
     {
       "id": 19,
-      "title": "视频生成 API",
-      "description": "实现视频生成 API",
+      "title": "剧本数据访问层",
+      "description": "创建剧本的 CRUD 操作",
       "steps": [
-        "创建 app/api/generate/video/[sceneId]/route.ts",
-        "POST 为单个分镜创建视频任务",
-        "获取分镜信息（场景、人物描述）",
-        "调用火山引擎视频生成 API",
-        "保存 task_id，更新 video_status 为 'processing'",
-        "创建 app/api/generate/video/[taskId]/route.ts",
-        "GET 查询视频任务状态",
-        "任务成功后下载视频并上传到 Storage",
-        "保存视频记录，更新 video_status 为 'completed'",
-        "创建 app/api/generate/videos/route.ts",
-        "POST 批量创建所有分镜视频任务"
+        "创建 lib/db/scripts.ts",
+        "实现 createScript() 创建剧本",
+        "实现 getScriptByEpisodeId() 获取剧集剧本",
+        "实现 updateScript() 更新剧本",
+        "实现 confirmScript() 确认剧本"
       ],
       "passes": false
     },
     {
       "id": 20,
-      "title": "视频拼接 API",
-      "description": "实现视频拼接成片 API",
+      "title": "分镜数据访问层",
+      "description": "创建分镜的 CRUD 操作",
       "steps": [
-        "创建 app/api/projects/[id]/concat/route.ts",
-        "POST 触发拼接任务",
-        "获取所有已确认分镜的视频",
-        "按顺序拼接视频",
-        "上传最终成片到 Storage",
-        "更新项目 stage 为 'completed'",
-        "GET 查询拼接状态"
+        "创建 lib/db/episode-scenes.ts",
+        "实现 createEpisodeScenes() 批量创建分镜",
+        "实现 getEpisodeScenesByEpisodeId() 获取剧集分镜列表",
+        "实现 updateEpisodeScene() 更新分镜",
+        "实现 confirmEpisodeScene() 确认分镜",
+        "实现 confirmAllEpisodeScenes() 确认所有分镜",
+        "实现 deleteEpisodeScenesByEpisodeId() 删除剧集所有分镜"
       ],
       "passes": false
     },
     {
       "id": 21,
+      "title": "分镜资产关联数据访问层",
+      "description": "创建分镜资产关联的数据访问",
+      "steps": [
+        "创建 lib/db/scene-assets.ts",
+        "实现 createSceneAsset() 创建关联",
+        "实现 getSceneAssetsBySceneId() 获取分镜关联的资产",
+        "实现 deleteSceneAssetsBySceneId() 删除分镜所有关联"
+      ],
+      "passes": false
+    },
+    {
+      "id": 22,
+      "title": "视频数据访问层",
+      "description": "创建视频的数据访问",
+      "steps": [
+        "创建 lib/db/scene-videos.ts",
+        "实现 createSceneVideo() 保存分镜视频",
+        "实现 getSceneVideoBySceneId() 获取分镜视频",
+        "创建 lib/db/episode-videos.ts",
+        "实现 createEpisodeVideo() 保存剧集成片",
+        "实现 getEpisodeVideoByEpisodeId() 获取剧集成片",
+        "实现 Supabase Storage 上传/删除功能"
+      ],
+      "passes": false
+    },
+    {
+      "id": 23,
+      "title": "系列 API - CRUD",
+      "description": "实现系列的增删改查 API",
+      "steps": [
+        "创建 app/api/series/route.ts",
+        "POST /api/series 创建系列",
+        "GET /api/series 获取系列列表",
+        "创建 app/api/series/[id]/route.ts",
+        "GET /api/series/:id 获取系列详情",
+        "PATCH /api/series/:id 更新系列",
+        "DELETE /api/series/:id 删除系列"
+      ],
+      "passes": false
+    },
+    {
+      "id": 24,
+      "title": "大纲 API",
+      "description": "实现大纲管理 API",
+      "steps": [
+        "创建 app/api/series/[id]/outline/route.ts",
+        "GET 获取大纲",
+        "POST 创建/更新大纲",
+        "POST /api/generate/outline AI生成大纲",
+        "POST /api/series/[id]/outline/confirm 确认大纲"
+      ],
+      "passes": false
+    },
+    {
+      "id": 25,
+      "title": "角色 API",
+      "description": "实现角色管理 API",
+      "steps": [
+        "创建 app/api/series/[id]/characters/route.ts",
+        "GET 获取角色列表",
+        "POST 创建角色",
+        "创建 app/api/characters/[id]/route.ts",
+        "PATCH 更新角色",
+        "DELETE 删除角色",
+        "POST /api/characters/[id]/confirm 确认角色"
+      ],
+      "passes": false
+    },
+    {
+      "id": 26,
+      "title": "场景 API",
+      "description": "实现场景管理 API",
+      "steps": [
+        "创建 app/api/series/[id]/world-scenes/route.ts",
+        "GET 获取场景列表",
+        "POST 创建场景",
+        "创建 app/api/world-scenes/[id]/route.ts",
+        "PATCH 更新场景",
+        "DELETE 删除场景",
+        "POST /api/world-scenes/[id]/confirm 确认场景"
+      ],
+      "passes": false
+    },
+    {
+      "id": 27,
+      "title": "美术资产生成 API",
+      "description": "实现美术资产生成 API",
+      "steps": [
+        "创建 app/api/generate/character-image/[characterId]/route.ts",
+        "POST 生成角色图片（正面/侧面/背面）",
+        "创建 app/api/generate/scene-image/[sceneId]/route.ts",
+        "POST 生成场景图片",
+        "创建 app/api/generate/image/[taskId]/route.ts",
+        "GET 查询图片生成状态",
+        "创建 app/api/series/[id]/assets/generate-all/route.ts",
+        "POST 批量生成所有资产",
+        "创建 app/api/series/[id]/assets/confirm-all/route.ts",
+        "POST 确认所有资产"
+      ],
+      "passes": false
+    },
+    {
+      "id": 28,
+      "title": "剧集 API - CRUD",
+      "description": "实现剧集的增删改查 API",
+      "steps": [
+        "创建 app/api/series/[id]/episodes/route.ts",
+        "GET 获取剧集列表",
+        "POST 创建剧集",
+        "创建 app/api/episodes/[id]/route.ts",
+        "GET 获取剧集详情",
+        "PATCH 更新剧集",
+        "DELETE 删除剧集"
+      ],
+      "passes": false
+    },
+    {
+      "id": 29,
+      "title": "剧本 API",
+      "description": "实现剧本管理 API",
+      "steps": [
+        "创建 app/api/episodes/[id]/script/route.ts",
+        "GET 获取剧本",
+        "POST 创建/更新剧本",
+        "POST /api/generate/script AI生成剧本",
+        "POST /api/episodes/[id]/script/confirm 确认剧本"
+      ],
+      "passes": false
+    },
+    {
+      "id": 30,
+      "title": "分镜 API",
+      "description": "实现分镜生成和管理 API",
+      "steps": [
+        "创建 app/api/episodes/[id]/scenes/route.ts",
+        "GET 获取分镜列表",
+        "POST /api/generate/scenes 生成分镜",
+        "调用智谱AI 根据剧本生成分镜",
+        "关联角色和场景资产",
+        "保存分镜到数据库",
+        "创建 app/api/episode-scenes/[id]/route.ts",
+        "PATCH 更新分镜",
+        "POST /api/episode-scenes/[id]/confirm 确认分镜",
+        "POST /api/episodes/[id]/scenes/confirm-all 确认所有分镜"
+      ],
+      "passes": false
+    },
+    {
+      "id": 31,
+      "title": "视频生成 API",
+      "description": "实现视频生成 API",
+      "steps": [
+        "创建 app/api/generate/video/[sceneId]/route.ts",
+        "POST 为单个分镜创建视频任务",
+        "获取分镜信息和关联资产",
+        "调用火山引擎视频生成 API",
+        "创建 app/api/generate/video/[taskId]/route.ts",
+        "GET 查询视频任务状态",
+        "任务成功后下载视频并上传到 Storage",
+        "创建 app/api/generate/videos/route.ts",
+        "POST 批量创建所有分镜视频任务",
+        "POST /api/episodes/[id]/videos/confirm-all 确认所有视频"
+      ],
+      "passes": false
+    },
+    {
+      "id": 32,
+      "title": "剧集成片 API",
+      "description": "实现视频拼接成片 API",
+      "steps": [
+        "创建 app/api/episodes/[id]/concat/route.ts",
+        "POST 触发拼接任务",
+        "获取所有已确认分镜的视频",
+        "按顺序拼接视频",
+        "上传最终成片到 Storage",
+        "更新剧集 stage 为 'completed'",
+        "GET 查询拼接状态"
+      ],
+      "passes": false
+    },
+    {
+      "id": 33,
       "title": "首页 - UI 实现",
       "description": "实现首页界面",
       "steps": [
         "更新 app/page.tsx 首页",
         "显示欢迎信息和产品介绍",
-        "添加「创建新项目」按钮",
-        "添加「查看我的项目」按钮",
+        "添加「创建新系列」按钮",
+        "添加「查看我的系列」按钮",
         "顶部导航栏（登录状态、用户信息、登出按钮）",
         "创建 components/layout/Header.tsx 导航栏组件"
       ],
       "passes": false
     },
     {
-      "id": 22,
-      "title": "项目列表页 - UI 实现",
-      "description": "实现项目列表页面",
+      "id": 34,
+      "title": "系列列表页 - UI 实现",
+      "description": "实现系列列表页面",
       "steps": [
-        "创建 app/projects/page.tsx 项目列表页",
-        "显示用户的所有项目（卡片形式）",
-        "每个卡片显示：标题、阶段、创建时间",
-        "点击卡片跳转到项目详情",
-        "添加「创建新项目」按钮"
+        "创建 app/series/page.tsx 系列列表页",
+        "显示用户的所有系列（卡片形式）",
+        "每个卡片显示：标题、风格、阶段、剧集数、创建时间",
+        "点击卡片跳转到系列大纲页",
+        "添加「创建新系列」按钮"
       ],
       "passes": false
     },
     {
-      "id": 23,
-      "title": "创建项目页 - UI 实现",
-      "description": "实现创建项目页面",
+      "id": 35,
+      "title": "创建系列页 - UI 实现",
+      "description": "实现创建系列页面",
       "steps": [
-        "创建 app/create/page.tsx 创建项目页",
-        "创建 components/project/CreateProjectForm.tsx 表单组件",
+        "创建 app/series/create/page.tsx 创建系列页",
+        "创建 components/series/CreateSeriesForm.tsx 表单组件",
         "标题输入框",
-        "提交后创建项目并跳转到剧本编辑页"
+        "简介输入框",
+        "预计集数输入",
+        "提交后创建系列并跳转到大纲编辑页"
       ],
       "passes": false
     },
     {
-      "id": 24,
+      "id": 36,
+      "title": "大纲编辑器 - UI 实现",
+      "description": "实现大纲编辑页面",
+      "steps": [
+        "创建 app/series/[id]/outline/page.tsx 大纲编辑页",
+        "创建 components/series/OutlineEditor.tsx 编辑器组件",
+        "美术风格选择器（预设风格卡片）",
+        "世界观设定输入框",
+        "「AI辅助创作大纲」按钮",
+        "显示生成的角色建议列表",
+        "显示生成的场景建议列表",
+        "显示剧集规划列表",
+        "编辑和确认功能",
+        "确认后跳转到角色设定页"
+      ],
+      "passes": false
+    },
+    {
+      "id": 37,
+      "title": "角色设定页 - UI 实现",
+      "description": "实现角色设定页面",
+      "steps": [
+        "创建 app/series/[id]/characters/page.tsx 角色设定页",
+        "创建 components/character/CharacterCard.tsx 角色卡片",
+        "显示：名称、角色类型、外貌描述、性格、背景",
+        "支持编辑各字段",
+        "支持添加新角色",
+        "支持删除角色",
+        "每张卡片显示「确认」按钮",
+        "创建 components/character/CharacterList.tsx 角色列表",
+        "底部显示「确认所有角色」按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 38,
+      "title": "场景设定页 - UI 实现",
+      "description": "实现场景设定页面",
+      "steps": [
+        "创建 app/series/[id]/scenes/page.tsx 场景设定页",
+        "创建 components/scene/WorldSceneCard.tsx 场景卡片",
+        "显示：名称、描述、氛围",
+        "支持编辑各字段",
+        "支持添加新场景",
+        "支持删除场景",
+        "每张卡片显示「确认」按钮",
+        "创建 components/scene/WorldSceneList.tsx 场景列表",
+        "底部显示「确认所有场景」按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 39,
+      "title": "美术资产页 - UI 实现",
+      "description": "实现美术资产页面",
+      "steps": [
+        "创建 app/series/[id]/assets/page.tsx 美术资产页",
+        "创建 components/asset/CharacterAssetCard.tsx 角色资产卡片",
+        "显示角色信息和三视图（正面/侧面/背面）",
+        "每张视图显示生成状态",
+        "支持重新生成单张图片",
+        "创建 components/asset/SceneAssetCard.tsx 场景资产卡片",
+        "显示场景信息和参考图",
+        "支持添加多张参考图",
+        "顶部显示「生成所有资产」按钮",
+        "底部显示「确认所有资产」按钮"
+      ],
+      "passes": false
+    },
+    {
+      "id": 40,
+      "title": "剧集列表页 - UI 实现",
+      "description": "实现剧集列表页面",
+      "steps": [
+        "创建 app/series/[id]/episodes/page.tsx 剧集列表页",
+        "显示系列信息（标题、风格、总集数）",
+        "显示剧集卡片列表",
+        "每个卡片显示：集数、标题、阶段、创建时间",
+        "点击卡片跳转到剧本编辑页",
+        "显示「添加新剧集」按钮",
+        "阶段指示器显示整体进度"
+      ],
+      "passes": false
+    },
+    {
+      "id": 41,
       "title": "剧本编辑器 - UI 实现",
       "description": "实现剧本编辑页面",
       "steps": [
-        "创建 app/projects/[id]/script/page.tsx 剧本编辑页",
-        "创建 components/script/ScriptEditor.tsx 编辑器组件",
+        "创建 app/episodes/[id]/script/page.tsx 剧本编辑页",
+        "创建 components/episode/ScriptEditor.tsx 编辑器组件",
+        "显示本集梗概",
         "剧本内容输入框（多行文本）",
         "「AI辅助创作」按钮",
         "自动保存功能",
@@ -335,72 +602,74 @@
       "passes": false
     },
     {
-      "id": 25,
+      "id": 42,
       "title": "分镜编辑器 - UI 实现",
       "description": "实现分镜编辑页面",
       "steps": [
-        "创建 app/projects/[id]/scenes/page.tsx 分镜编辑页",
-        "创建 components/scene/SceneCard.tsx 分镜卡片",
-        "显示：序号、场景描述、人物描述、对话、关联资产",
+        "创建 app/episodes/[id]/scenes/page.tsx 分镜编辑页",
+        "创建 components/episode/EpisodeSceneCard.tsx 分镜卡片",
+        "显示：序号、场景、人物描述、对话、关联资产",
+        "显示关联的角色和场景缩略图",
         "支持编辑各字段",
+        "支持修改关联资产",
         "显示「重新生成」按钮",
         "显示「确认」按钮",
-        "创建 components/scene/SceneList.tsx 分镜列表",
+        "创建 components/episode/EpisodeSceneList.tsx 分镜列表",
         "底部显示「确认所有分镜」按钮"
       ],
       "passes": false
     },
     {
-      "id": 26,
-      "title": "资产管理界面 - UI 实现",
-      "description": "实现资产管理页面",
-      "steps": [
-        "创建 app/projects/[id]/assets/page.tsx 资产管理页",
-        "创建 components/asset/AssetCard.tsx 资产卡片",
-        "显示：资产名称、类型、图片、描述",
-        "支持上传图片",
-        "支持编辑资产信息",
-        "创建 components/asset/AssetList.tsx 资产列表"
-      ],
-      "passes": false
-    },
-    {
-      "id": 27,
-      "title": "视频生成页面 - UI 实现",
+      "id": 43,
+      "title": "视频生成页 - UI 实现",
       "description": "实现视频生成页面",
       "steps": [
-        "创建 app/projects/[id]/videos/page.tsx 视频生成页",
-        "创建 components/video/VideoCard.tsx 视频卡片",
-        "显示：分镜序号、描述、视频/加载状态",
+        "创建 app/episodes/[id]/videos/page.tsx 视频生成页",
+        "创建 components/video/SceneVideoCard.tsx 视频卡片",
+        "显示：分镜序号、描述、关联资产、视频/加载状态",
         "显示视频生成状态 (pending/processing/completed/failed)",
         "processing 状态显示进度动画",
         "每张卡片显示「重新生成」和「确认」按钮",
-        "创建 components/video/VideoList.tsx 视频列表",
+        "创建 components/video/SceneVideoList.tsx 视频列表",
         "顶部显示「生成所有视频」按钮",
         "底部显示「确认所有视频」按钮"
       ],
       "passes": false
     },
     {
-      "id": 28,
-      "title": "最终成片页面 - UI 实现",
-      "description": "实现最终成片页面",
+      "id": 44,
+      "title": "剧集成片页 - UI 实现",
+      "description": "实现剧集成片页面",
       "steps": [
-        "创建 app/projects/[id]/final/page.tsx 成片页面",
+        "创建 app/episodes/[id]/final/page.tsx 成片页面",
         "显示所有分镜的视频预览",
         "显示「拼接成片」按钮",
         "显示拼接进度",
         "显示最终成片预览",
-        "显示「下载」按钮"
+        "显示「下载」按钮",
+        "显示「返回剧集列表」按钮"
       ],
       "passes": false
     },
     {
-      "id": 29,
-      "title": "项目详情页 - 阶段指示器",
-      "description": "实现项目详情页阶段指示器",
+      "id": 45,
+      "title": "系列阶段指示器 - UI 实现",
+      "description": "实现系列阶段指示器",
       "steps": [
-        "创建 components/project/StageIndicator.tsx 阶段指示器",
+        "创建 components/series/SeriesStageIndicator.tsx 阶段指示器",
+        "显示阶段: draft → outline → assets → episodes → completed",
+        "高亮当前阶段",
+        "已完成阶段显示勾选",
+        "点击可跳转到对应阶段页面"
+      ],
+      "passes": false
+    },
+    {
+      "id": 46,
+      "title": "剧集阶段指示器 - UI 实现",
+      "description": "实现剧集阶段指示器",
+      "steps": [
+        "创建 components/episode/EpisodeStageIndicator.tsx 阶段指示器",
         "显示阶段: draft → script → scenes → videos → completed",
         "高亮当前阶段",
         "已完成阶段显示勾选",
@@ -409,25 +678,27 @@
       "passes": false
     },
     {
-      "id": 30,
+      "id": 47,
       "title": "实时状态更新",
       "description": "实现生成状态的实时更新",
       "steps": [
+        "实现轮询机制检查图片生成状态",
         "实现轮询机制检查视频生成状态",
-        "视频 processing 时每 5 秒轮询一次",
+        "processing 时每 5 秒轮询一次",
         "状态变化时自动更新 UI",
         "显示进度条或加载动画"
       ],
       "passes": false
     },
     {
-      "id": 31,
+      "id": 48,
       "title": "错误处理和边界情况",
       "description": "完善错误处理",
       "steps": [
         "创建 app/error.tsx 全局错误页面",
         "创建 app/not-found.tsx 404 页面",
-        "创建 app/projects/[id]/error.tsx 项目错误边界",
+        "创建 app/series/[id]/error.tsx 系列错误边界",
+        "创建 app/episodes/[id]/error.tsx 剧集错误边界",
         "API 错误返回统一格式",
         "前端显示友好的错误提示（Toast 组件）",
         "生成失败时显示错误信息和重试按钮"
@@ -435,7 +706,7 @@
       "passes": false
     },
     {
-      "id": 32,
+      "id": 49,
       "title": "Loading 状态",
       "description": "添加加载状态指示",
       "steps": [
@@ -449,12 +720,13 @@
       "passes": false
     },
     {
-      "id": 33,
+      "id": 50,
       "title": "响应式设计",
       "description": "适配移动端",
       "steps": [
         "导航栏移动端适配（汉堡菜单）",
-        "项目卡片响应式布局",
+        "系列卡片响应式布局",
+        "角色卡片响应式布局",
         "分镜卡片响应式布局",
         "表单响应式布局",
         "阶段指示器响应式布局",
@@ -463,16 +735,18 @@
       "passes": false
     },
     {
-      "id": 34,
+      "id": 51,
       "title": "最终测试和优化",
       "description": "完整流程测试和优化",
       "steps": [
         "运行 npm run lint 检查代码规范",
         "运行 npm run build 确保构建成功",
-        "测试完整用户流程：注册→登录→创建项目→编写剧本→生成分镜→确认→生成视频→确认→拼接成片→下载",
+        "测试完整用户流程：注册→登录→创建系列→编写大纲→设定角色场景→生成美术资产→创作剧集→下载成片",
+        "测试多剧集创作流程",
+        "测试资产关联和一致性",
         "测试每一步的重新生成功能",
         "测试错误处理",
-        "性能优化（视频懒加载等）"
+        "性能优化（图片/视频懒加载等）"
       ],
       "passes": false
     }

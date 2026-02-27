@@ -1,9 +1,29 @@
-# AutoDrama - 自动化短剧制作系统任务规划
+# AutoDrama - 任务规划
 
 ## 项目概述
 
 构建一个自动化短剧制作流水线系统：
-**剧本创作 → 分镜生成 → AI视频片段生成 → 视频拼接成片**
+**系列大纲 → 角色场景设定 → 美术资产生成 → 剧集创作(剧本→分镜→视频→成片)**
+
+---
+
+## 核心概念
+
+### 短剧系列 (Series)
+一部完整的短剧作品，包含多个剧集。在开始创作之前，需要完成：
+1. **美术风格设定** - 整部短剧的视觉风格
+2. **世界观设定** - 故事发生的背景
+3. **角色设定** - 主要角色的形象细节与性格特色
+4. **场景设定** - 主要发生场景
+5. **剧集规划** - 总集数、每集梗概
+
+### 美术资产
+AI生成的固定视觉资产，用于保持整部短剧的一致性：
+- **角色三视图** - 每个主要角色的正面、侧面、背面图
+- **场景参考图** - 每个主要场景的多张图片
+
+### 剧集 (Episode)
+系列中的单集，创作流程：剧本 → 分镜 → 视频片段 → 成片
 
 ---
 
@@ -11,10 +31,11 @@
 
 | 参考项目 (hello-nextjs) | AutoDrama |
 |------------------------|-----------|
-| 故事 → 分镜描述 → 图片 → 视频 | 剧本 → 分镜(含资产) → 视频片段 → 拼接成片 |
-| 需要图片生成环节 | 跳过图片，直接生成视频 |
-| 单独的视频确认 | 最终拼接合成完整短片 |
-| 无资产管理 | 需要资产管理（角色形象一致性） |
+| 单个项目 = 单个剧本 | 系列 → 多个剧集 |
+| 故事 → 分镜描述 → 图片 → 视频 | 大纲 → 角色/场景 → 资产 → 剧集 |
+| 无资产管理 | 需要资产管理（角色三视图、场景图） |
+| 图片生成是中间环节 | 图片生成用于创建固定美术资产 |
+| 单视频确认 | 剧集拼接 + 系列整体进度 |
 
 ---
 
@@ -25,8 +46,9 @@
 后端: Next.js API Routes
 数据库: Supabase (PostgreSQL)
 文件存储: Supabase Storage
-LLM: 智谱AI GLM-4 (剧本创作 + 分镜生成)
-视频生成: 火山引擎 Seedance / 可灵 AI
+LLM: 智谱AI GLM-4 (大纲创作 + 剧本生成 + 分镜生成)
+图片生成: 火山引擎 Seedream (角色三视图、场景图)
+视频生成: 火山引擎 Seedance
 视频拼接: FFmpeg.wasm 或云端服务
 ```
 
@@ -34,38 +56,52 @@ LLM: 智谱AI GLM-4 (剧本创作 + 分镜生成)
 
 ## 阶段划分
 
-### Phase 1: 基础架构 (任务 1-6)
+### Phase 1: 基础架构 (任务 1-8)
 - 项目初始化与配置
-- 数据库设计
+- 数据库设计（系列+剧集相关表）
 - Supabase 客户端封装
 - 用户认证系统
 
-### Phase 2: AI服务集成 (任务 7-9)
-- 智谱AI 剧本生成分镜 API
-- 视频生成 API (火山引擎/可灵)
+### Phase 2: AI服务集成 (任务 9-12)
+- 智谱AI API (大纲+剧本+分镜生成)
+- 火山引擎图片生成 API (角色三视图、场景图)
+- 火山引擎视频生成 API
 - 视频拼接服务
 
-### Phase 3: 数据层 (任务 10-12)
-- 项目 CRUD
-- 分镜数据访问
-- 资产数据访问
+### Phase 3: 数据层 (任务 13-22)
+- 系列数据访问
+- 大纲数据访问
+- 角色/场景数据访问
+- 美术资产数据访问
+- 剧集数据访问
+- 剧本/分镜/视频数据访问
 
-### Phase 4: API层 (任务 13-16)
-- 项目管理 API
-- 剧本生成分镜 API
+### Phase 4: API层 (任务 23-32)
+- 系列管理 API
+- 大纲 API
+- 角色/场景 API
+- 美术资产生成 API
+- 剧集管理 API
+- 剧本/分镜 API
 - 视频生成 API
-- 视频拼接 API
+- 成片拼接 API
 
-### Phase 5: 前端UI (任务 17-23)
+### Phase 5: 前端UI (任务 33-47)
 - 首页与导航
-- 项目列表
+- 系列列表与创建
+- 大纲编辑器
+- 角色设定页面
+- 场景设定页面
+- 美术资产页面
+- 剧集列表页面
 - 剧本编辑器
 - 分镜编辑器
-- 视频生成与预览
-- 资产管理界面
-- 最终成片导出
+- 视频生成页面
+- 成片预览页面
+- 阶段指示器
+- 状态更新
 
-### Phase 6: 完善与测试 (任务 24-27)
+### Phase 6: 完善与测试 (任务 48-51)
 - 错误处理
 - Loading状态
 - 响应式设计
@@ -73,215 +109,86 @@ LLM: 智谱AI GLM-4 (剧本创作 + 分镜生成)
 
 ---
 
-## 详细任务列表
-
-### Phase 1: 基础架构
-
-#### 任务 1: 项目初始化
-- 创建 Next.js 15 项目
-- 配置 TypeScript + Tailwind CSS
-- 安装核心依赖
-- 创建 .env.local 模板
-
-#### 任务 2: 数据库 Schema 设计
-- projects 表 (项目)
-- scripts 表 (剧本)
-- scenes 表 (分镜，含资产编号)
-- assets 表 (形象资产)
-- videos 表 (视频片段)
-- final_videos 表 (最终成片)
-
-#### 任务 3: Supabase 客户端封装
-- 服务端客户端
-- 浏览器客户端
-- 中间件集成
-
-#### 任务 4: 用户认证 - 登录
-- 登录页面
-- 登录表单组件
-
-#### 任务 5: 用户认证 - 注册
-- 注册页面
-- 注册表单组件
-
-#### 任务 6: 认证中间件
-- 路由保护
-- 自动重定向
-
----
-
-### Phase 2: AI服务集成
-
-#### 任务 7: 智谱AI 封装
-- 剧本创作 prompt
-- 分镜生成 prompt (含资产提取)
-- API 调用封装
-
-#### 任务 8: 视频生成 API 封装
-- 火山引擎 Seedance 集成
-- 或可灵 AI 集成
-- 任务状态查询
-
-#### 任务 9: 视频拼接服务
-- FFmpeg.wasm 集成 或
-- 云端视频拼接服务
-- 片段顺序编排
-
----
-
-### Phase 3: 数据层
-
-#### 任务 10: 项目数据访问
-- CRUD 操作
-- 阶段状态管理
-
-#### 任务 11: 分镜数据访问
-- 分镜 CRUD
-- 资产关联
-- 确认状态
-
-#### 任务 12: 资产数据访问
-- 资产 CRUD
-- 资产-分镜关联
-
----
-
-### Phase 4: API层
-
-#### 任务 13: 项目管理 API
-- 创建/读取/更新/删除项目
-
-#### 任务 14: 剧本与分镜 API
-- 保存剧本
-- 生成/重新生成分镜
-- 编辑分镜
-- 确认分镜
-
-#### 任务 15: 视频生成 API
-- 单个分镜视频生成
-- 批量视频生成
-- 状态查询
-
-#### 任务 16: 视频拼接 API
-- 触发拼接任务
-- 查询拼接状态
-- 下载最终成片
-
----
-
-### Phase 5: 前端UI
-
-#### 任务 17: 首页与导航
-- 导航栏组件
-- 首页布局
-
-#### 任务 18: 项目列表页
-- 项目卡片
-- 分页加载
-
-#### 任务 19: 剧本编辑器
-- 剧本输入/编辑
-- AI辅助创作按钮
-- 自动保存
-
-#### 任务 20: 分镜编辑器
-- 分镜列表展示
-- 分镜编辑 (场景、人物、对话、资产)
-- 资产选择器
-- 确认/重新生成
-
-#### 任务 21: 资产管理界面
-- 资产库展示
-- 资产上传
-- 资产编辑
-
-#### 任务 22: 视频生成与预览
-- 生成按钮
-- 进度显示
-- 视频预览
-- 重新生成
-
-#### 任务 23: 最终成片导出
-- 拼接触发
-- 进度显示
-- 预览与下载
-
----
-
-### Phase 6: 完善与测试
-
-#### 任务 24: 错误处理
-- 全局错误页面
-- API错误处理
-- Toast提示
-
-#### 任务 25: Loading状态
-- 加载组件
-- 骨架屏
-
-#### 任务 26: 响应式设计
-- 移动端适配
-
-#### 任务 27: 最终测试
-- lint/build
-- 完整流程测试
-- 性能优化
-
----
-
-## 数据模型设计
+## 数据模型概览
 
 ```
-projects (项目)
-├── id: uuid
-├── user_id: uuid
-├── title: string
-├── stage: draft/script/scenes/videos/completed
-└── created_at, updated_at
+series (短剧系列)
+├── id, user_id, title, description
+├── art_style (美术风格)
+├── world_setting (世界观)
+├── total_episodes (总集数)
+└── stage (阶段)
+
+outlines (大纲)
+├── id, series_id
+├── content (大纲内容)
+└── episode_outlines (各集梗概 JSON)
+
+characters (角色)
+├── id, series_id
+├── name, role, appearance, personality, background
+└── confirmed
+
+character_images (角色图片)
+├── id, character_id
+├── view_type (front/side/back)
+└── url, status
+
+world_scenes (场景)
+├── id, series_id
+├── name, description, atmosphere
+└── confirmed
+
+scene_images (场景图片)
+├── id, world_scene_id
+├── url, order_index, status
+
+episodes (剧集)
+├── id, series_id
+├── episode_number, title, synopsis
+└── stage
 
 scripts (剧本)
-├── id: uuid
-├── project_id: uuid
-├── content: text
-├── ai_generated: boolean
-└── created_at, updated_at
+├── id, episode_id
+├── content, ai_generated, confirmed
 
-scenes (分镜)
-├── id: uuid
-├── project_id: uuid
-├── order_index: int
-├── scene_description: text (场景描述)
-├── character_description: text (人物描述)
-├── dialogue: text (对话内容)
-├── asset_ids: uuid[] (关联资产)
-├── video_status: pending/processing/completed/failed
-├── confirmed: boolean
-└── created_at
+episode_scenes (分镜)
+├── id, episode_id
+├── order_index, scene_description, character_description, dialogue
+├── video_status, confirmed
 
-assets (形象资产)
-├── id: uuid
-├── project_id: uuid
-├── name: string
-├── description: text
-├── image_url: string
-├── asset_type: character/prop/background
-└── created_at
+scene_assets (分镜资产关联)
+├── episode_scene_id, character_id, world_scene_id
 
-videos (视频片段)
-├── id: uuid
-├── scene_id: uuid
-├── url: string
-├── duration: int
-├── task_id: string
-└── created_at
+scene_videos (分镜视频)
+├── id, episode_scene_id
+├── url, duration, task_id, status
 
-final_videos (最终成片)
-├── id: uuid
-├── project_id: uuid
-├── url: string
-├── duration: int
-├── status: pending/processing/completed/failed
-└── created_at
+episode_videos (剧集成片)
+├── id, episode_id
+├── url, duration, status
+```
+
+---
+
+## 用户流程
+
+```mermaid
+graph LR
+    A[创建系列] --> B[编写大纲]
+    B --> C[设定角色]
+    C --> D[设定场景]
+    D --> E[生成美术资产]
+    E --> F[创作剧集1]
+    F --> G[创作剧集2]
+    G --> H[...]
+    H --> I[系列完成]
+
+    subgraph 创作剧集
+        F1[编写剧本] --> F2[生成分镜]
+        F2 --> F3[生成视频]
+        F3 --> F4[拼接成片]
+    end
 ```
 
 ---
