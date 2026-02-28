@@ -1,5 +1,27 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 1: 项目初始化 ✅
+
+### 已完成:
+- 创建 Next.js 15 项目 (App Router + TypeScript + Tailwind CSS)
+- 安装核心依赖: @supabase/supabase-js, @supabase/ssr, clsx, tailwind-merge
+- 创建项目目录结构:
+  - src/lib/supabase, src/lib/ai, src/lib/db, src/lib/video
+  - src/components/auth, layout, series, character, scene, asset, episode, video, ui
+  - src/types
+  - supabase/migrations
+- 创建 .env.local 环境变量模板 (Supabase, Poe, 火山引擎, 可灵)
+- 创建 lib/utils.ts 工具函数文件
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 下一步:
+- 执行任务 2: Supabase 数据库 Schema - 系列相关
+
+---
+
 ## 2026-02-28 - 工作流程规范更新
 
 ### 已完成:
