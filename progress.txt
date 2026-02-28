@@ -1,5 +1,26 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 6: 用户认证 - 注册页面 ✅
+
+### 完成内容:
+- 创建 app/register/page.tsx 注册页面
+- 创建 components/auth/RegisterForm.tsx 注册表单组件
+- 实现邮箱+密码注册 (Supabase Auth signUp)
+- 添加密码确认字段和验证
+- 注册成功后跳转到登录页
+- 显示注册错误信息 (中文本地化)
+- 添加成功提示信息
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+- ✅ 浏览器测试通过 (http://localhost:3001/register 返回 200)
+
+### 下一步:
+- 执行任务 7: 用户认证 - 登出功能
+
+---
+
 ## 2026-02-28 - Task 5: 用户认证 - 登录页面 ✅
 
 ### 完成内容:
