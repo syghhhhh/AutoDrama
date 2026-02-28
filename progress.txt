@@ -1,5 +1,29 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 5: 用户认证 - 登录页面 ✅
+
+### 完成内容:
+- 创建 app/login/page.tsx 登录页面
+- 创建 components/auth/LoginForm.tsx 登录表单组件
+- 创建 src/lib/utils.ts (cn 工具函数)
+- 实现邮箱+密码登录 (Supabase Auth signInWithPassword)
+- 登录成功后支持重定向 (redirect 参数)
+- 显示登录错误信息 (中文本地化)
+- 添加 Suspense fallback 处理
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+- ⚠️ 浏览器测试需要配置真实的 Supabase 凭证
+
+### 备注:
+- 代码实现完整，浏览器测试需要更新 .env.local 中的 Supabase URL 和 Key
+
+### 下一步:
+- 执行任务 6: 用户认证 - 注册页面
+
+---
+
 ## 2026-02-28 - Task 4: Supabase 客户端封装 ✅
 
 ### 完成内容:
