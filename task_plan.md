@@ -216,6 +216,50 @@ graph LR
 
 ---
 
+## 自动开发 Task 执行工作流（强制执行）
+
+每个 Task 必须按照以下顺序完整执行，缺一不可：
+
+### Step 1: 代码编写
+- 阅读 task.json 中任务描述和步骤
+- 实现功能代码
+- 确保代码符合项目规范
+
+### Step 2: Git 提交
+- **在测试之前先提交代码**
+- 使用有意义的 commit message
+- 确保 commit 包含所有相关更改
+
+### Step 3: 测试验证
+- 运行 `npm run lint` 检查代码规范
+- 运行 `npm run build` 确保构建成功
+- **UI 修改必须在浏览器中测试**
+- 验证功能正常工作
+
+### Step 4: 更新日志
+- 更新 `progress.md` 详细记录工作内容
+- 更新 `progress.txt` 简要记录
+
+### Step 5: 更新任务状态
+- 将 task.json 中对应任务的 `"passes": false` 改为 `"passes": true`
+
+### Step 6: 最终提交
+- 将所有更新（代码、日志、task.json）一起提交
+- 推送到远程仓库
+
+```
+Task 完成检查清单:
+□ 代码编写完成
+□ Git 已提交
+□ 测试验证通过
+□ progress.md 已更新
+□ progress.txt 已更新
+□ task.json passes 已改为 true
+□ 最终提交并推送
+```
+
+---
+
 ## Git 工作流
 
 每次完成任务后：
