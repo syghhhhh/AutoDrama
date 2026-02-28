@@ -156,10 +156,10 @@
     {
       "id": 12,
       "title": "视频拼接服务",
-      "description": "实现视频拼接功能",
+      "description": "实现视频拼接功能（使用 FFmpeg）",
       "steps": [
         "创建 lib/video/concat.ts",
-        "研究并选择拼接方案 (FFmpeg.wasm 或云端服务)",
+        "安装 @ffmpeg/ffmpeg 和 @ffmpeg/util 依赖",
         "实现视频片段顺序编排",
         "实现拼接任务执行",
         "添加类型定义"
