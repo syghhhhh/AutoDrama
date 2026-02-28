@@ -3,7 +3,10 @@
     "allow": [
       "Skill(planning-with-files:planning-with-files)",
       "Bash(git push:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npm install:*)",
+      "Bash(mkdir:*)"
     ]
   }
 }
