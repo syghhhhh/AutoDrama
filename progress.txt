@@ -1,5 +1,37 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 12: 视频拼接服务 ✅
+
+### 完成内容:
+- 安装 @ffmpeg/ffmpeg 和 @ffmpeg/util 依赖
+- 创建 types/video.ts 定义视频处理相关类型
+- 创建 lib/video/concat.ts 实现视频拼接服务
+- 实现 VideoConcatService 类
+- 实现 FFmpeg WASM 初始化和加载
+- 实现视频片段下载和顺序编排
+- 实现视频拼接任务执行（使用 concat demuxer）
+- 实现进度回调机制
+- 实现质量预设（high/medium/low）
+- 添加辅助函数：prepareVideoSources, calculateTotalDuration
+- 创建 lib/video/index.ts 导出所有视频处理功能
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 备注:
+- 使用 FFmpeg WASM 进行浏览器端视频拼接
+- 从 unpkg CDN 加载 FFmpeg core
+- 支持多种输出格式和质量的视频输出
+- 自动清理临时文件
+- 注意：FFmpeg WASM 在服务端不可用，需要在浏览器环境使用
+
+### 下一步:
+- 执行任务 11: 可灵 API 封装（需 API 文档）
+- 或执行任务 13: 系列数据访问层
+
+---
+
 ## 2026-02-28 - Task 10: 火山引擎即梦 API 封装 ✅
 
 ### 完成内容:
