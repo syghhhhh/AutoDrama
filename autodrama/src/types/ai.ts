@@ -180,3 +180,129 @@ export interface AIModelConfig {
   temperature?: number;
   maxTokens?: number;
 }
+
+// ============================================
+// 火山引擎即梦 API Types
+// ============================================
+
+export type JimengModel = "jimeng_t2i_v40";
+
+export type ImageGenerationStatus = "in_queue" | "generating" | "done" | "failed";
+
+export interface JimengSubmitTaskRequest {
+  req_key: JimengModel;
+  prompt: string;
+  image_urls?: string[];
+  scale?: number;
+  width?: number;
+  height?: number;
+  use_sr?: boolean;
+  sr_scale?: number;
+}
+
+export interface JimengSubmitTaskResponse {
+  code: number;
+  message: string;
+  status: number;
+  request_id: string;
+  data: {
+    task_id: string;
+  };
+  time_elapsed: string;
+}
+
+export interface JimengGetResultRequest {
+  req_key: JimengModel;
+  task_id: string;
+  req_json?: string;
+}
+
+export interface JimengGetResultResponse {
+  code: number;
+  message: string;
+  status: number;
+  request_id: string;
+  data: {
+    status: ImageGenerationStatus;
+    image_urls: string[] | null;
+    binary_data_base64: string[] | null;
+    video_url: string;
+    aigc_meta_tagged: boolean;
+  };
+  time_elapsed: string;
+}
+
+// ============================================
+// 角色三视图生成 Types
+// ============================================
+
+export type CharacterViewType = "front" | "side" | "back";
+
+export interface CharacterImageGenerationInput {
+  characterName: string;
+  appearance: string;
+  personality: string;
+  artStyle: string;
+  viewType: CharacterViewType;
+}
+
+export interface CharacterImageGenerationResult {
+  taskId: string;
+  status: ImageGenerationStatus;
+  imageUrl?: string;
+  error?: string;
+}
+
+// ============================================
+// 场景图生成 Types
+// ============================================
+
+export interface SceneImageGenerationInput {
+  sceneName: string;
+  description: string;
+  atmosphere: string;
+  artStyle: string;
+}
+
+export interface SceneImageGenerationResult {
+  taskId: string;
+  status: ImageGenerationStatus;
+  imageUrl?: string;
+  error?: string;
+}
+
+// ============================================
+// 分镜参考图生成 Types
+// ============================================
+
+export interface SceneReferenceImageInput {
+  sceneDescription: string;
+  characterDescription: string;
+  actionDescription: string;
+  artStyle: string;
+  referenceImageUrl?: string;
+}
+
+export interface SceneReferenceImageResult {
+  taskId: string;
+  status: ImageGenerationStatus;
+  imageUrl?: string;
+  error?: string;
+}
+
+// ============================================
+// 即梦 API 配置
+// ============================================
+
+export interface JimengConfig {
+  accessKey: string;
+  secretKey: string;
+  region?: string;
+  host?: string;
+  endpoint?: string;
+}
+
+export interface JimengRetryConfig extends RetryConfig {
+  pollingInterval: number; // milliseconds
+  maxPollingAttempts: number;
+}
