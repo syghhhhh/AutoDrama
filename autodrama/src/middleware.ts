@@ -17,10 +17,11 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const { supabase, response } = await createClient(request);
 
-  // Refresh session if expired - required for Server Components
+  // Use getUser() for secure authentication check in middleware
+  // This validates the JWT token with Supabase Auth server
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
 
@@ -34,15 +35,15 @@ export async function middleware(request: NextRequest) {
   const authRoutes = ["/login", "/register"];
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  // If trying to access protected route without session, redirect to login
-  if (isProtectedRoute && !session) {
+  // If trying to access protected route without user, redirect to login
+  if (isProtectedRoute && !user) {
     const redirectUrl = new URL("/login", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // If trying to access auth routes with session, redirect to home
-  if (isAuthRoute && session) {
+  // If trying to access auth routes with user, redirect to home
+  if (isAuthRoute && user) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
