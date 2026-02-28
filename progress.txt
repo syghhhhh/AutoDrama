@@ -14,10 +14,7 @@
 ### 测试:
 - ✅ npm run lint 通过
 - ✅ npm run build 成功
-- ⚠️ 浏览器测试需要配置真实的 Supabase 凭证
-
-### 备注:
-- 代码实现完整，浏览器测试需要更新 .env.local 中的 Supabase URL 和 Key
+- ✅ 浏览器测试通过 (http://localhost:3001/login 返回 200)
 
 ### 下一步:
 - 执行任务 6: 用户认证 - 注册页面

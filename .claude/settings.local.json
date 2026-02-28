@@ -6,7 +6,13 @@
       "Bash(git:*)",
       "Bash(npx create-next-app@latest:*)",
       "Bash(npm install:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(rm:*)"
     ]
   }
 }
