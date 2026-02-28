@@ -3,7 +3,7 @@
 ## 项目概述
 
 构建一个自动化短剧制作流水线系统：
-**系列大纲 → 角色场景设定 → 美术资产生成 → 剧集创作(剧本→分镜→视频→成片)**
+**系列大纲 → 角色场景设定 → 美术资产生成 → 剧集创作(剧本→分镜脚本→分镜参考图→分镜视频→拼接成片)**
 
 ---
 
@@ -22,8 +22,22 @@ AI生成的固定视觉资产，用于保持整部短剧的一致性：
 - **角色三视图** - 每个主要角色的正面、侧面、背面图
 - **场景参考图** - 每个主要场景的多张图片
 
-### 剧集 (Episode)
-系列中的单集，创作流程：剧本 → 分镜 → 视频片段 → 成片
+### 剧集创作流程
+1. **剧本编写** - 编写本集剧本内容
+2. **分镜脚本编写** - 将剧本拆解为分镜脚本
+3. **分镜参考图生成** - 为每个分镜生成参考图
+4. **分镜视频生成** - 为每个分镜生成视频片段
+5. **拼接成片** - 将所有分镜视频拼接为完整视频
+
+---
+
+## 外部 API 集成
+
+| 功能 | API | 说明 |
+|-----|-----|-----|
+| 大模型 | **Poe API** | 大纲生成、剧本生成、分镜脚本生成 |
+| 图片生成 | **火山引擎即梦** | 角色三视图、场景图、分镜参考图 |
+| 视频生成 | **可灵 API** | 分镜视频生成 |
 
 ---
 
@@ -34,8 +48,8 @@ AI生成的固定视觉资产，用于保持整部短剧的一致性：
 | 单个项目 = 单个剧本 | 系列 → 多个剧集 |
 | 故事 → 分镜描述 → 图片 → 视频 | 大纲 → 角色/场景 → 资产 → 剧集 |
 | 无资产管理 | 需要资产管理（角色三视图、场景图） |
-| 图片生成是中间环节 | 图片生成用于创建固定美术资产 |
-| 单视频确认 | 剧集拼接 + 系列整体进度 |
+| 智谱AI + 火山引擎Seedream/Seedance | Poe + 火山引擎即梦 + 可灵 |
+| 剧本 → 分镜 → 视频 | 剧本 → 分镜脚本 → 分镜参考图 → 分镜视频 → 成片 |
 
 ---
 
@@ -46,9 +60,9 @@ AI生成的固定视觉资产，用于保持整部短剧的一致性：
 后端: Next.js API Routes
 数据库: Supabase (PostgreSQL)
 文件存储: Supabase Storage
-LLM: 智谱AI GLM-4 (大纲创作 + 剧本生成 + 分镜生成)
-图片生成: 火山引擎 Seedream (角色三视图、场景图)
-视频生成: 火山引擎 Seedance
+LLM: Poe API (大纲创作 + 剧本生成 + 分镜脚本生成)
+图片生成: 火山引擎即梦 API (角色三视图、场景图、分镜参考图)
+视频生成: 可灵 API
 视频拼接: FFmpeg.wasm 或云端服务
 ```
 
@@ -63,30 +77,32 @@ LLM: 智谱AI GLM-4 (大纲创作 + 剧本生成 + 分镜生成)
 - 用户认证系统
 
 ### Phase 2: AI服务集成 (任务 9-12)
-- 智谱AI API (大纲+剧本+分镜生成)
-- 火山引擎图片生成 API (角色三视图、场景图)
-- 火山引擎视频生成 API
+- Poe API (大纲+剧本+分镜脚本生成)
+- 火山引擎即梦 API (角色三视图、场景图、分镜参考图)
+- 可灵 API (视频生成)
 - 视频拼接服务
 
-### Phase 3: 数据层 (任务 13-22)
+### Phase 3: 数据层 (任务 13-23)
 - 系列数据访问
 - 大纲数据访问
 - 角色/场景数据访问
 - 美术资产数据访问
 - 剧集数据访问
-- 剧本/分镜/视频数据访问
+- 剧本/分镜脚本/参考图/视频数据访问
 
-### Phase 4: API层 (任务 23-32)
+### Phase 4: API层 (任务 24-34)
 - 系列管理 API
 - 大纲 API
 - 角色/场景 API
 - 美术资产生成 API
 - 剧集管理 API
-- 剧本/分镜 API
-- 视频生成 API
+- 剧本 API
+- 分镜脚本 API
+- 分镜参考图 API
+- 分镜视频 API
 - 成片拼接 API
 
-### Phase 5: 前端UI (任务 33-47)
+### Phase 5: 前端UI (任务 35-50)
 - 首页与导航
 - 系列列表与创建
 - 大纲编辑器
@@ -94,14 +110,15 @@ LLM: 智谱AI GLM-4 (大纲创作 + 剧本生成 + 分镜生成)
 - 场景设定页面
 - 美术资产页面
 - 剧集列表页面
-- 剧本编辑器
-- 分镜编辑器
-- 视频生成页面
+- 剧本编写页面
+- 分镜脚本页面
+- 分镜参考图页面
+- 分镜视频页面
 - 成片预览页面
 - 阶段指示器
 - 状态更新
 
-### Phase 6: 完善与测试 (任务 48-51)
+### Phase 6: 完善与测试 (任务 51-54)
 - 错误处理
 - Loading状态
 - 响应式设计
@@ -132,7 +149,7 @@ characters (角色)
 character_images (角色图片)
 ├── id, character_id
 ├── view_type (front/side/back)
-└── url, status
+└── url, task_id, status
 
 world_scenes (场景)
 ├── id, series_id
@@ -141,7 +158,7 @@ world_scenes (场景)
 
 scene_images (场景图片)
 ├── id, world_scene_id
-├── url, order_index, status
+├── url, task_id, status, order_index
 
 episodes (剧集)
 ├── id, series_id
@@ -152,10 +169,15 @@ scripts (剧本)
 ├── id, episode_id
 ├── content, ai_generated, confirmed
 
-episode_scenes (分镜)
+episode_scenes (分镜脚本)
 ├── id, episode_id
-├── order_index, scene_description, character_description, dialogue
-├── video_status, confirmed
+├── order_index, scene_description, character_description
+├── dialogue, action_description
+├── image_status, video_status, confirmed
+
+scene_reference_images (分镜参考图)
+├── id, episode_scene_id
+├── url, task_id, status
 
 scene_assets (分镜资产关联)
 ├── episode_scene_id, character_id, world_scene_id
@@ -185,9 +207,10 @@ graph LR
     H --> I[系列完成]
 
     subgraph 创作剧集
-        F1[编写剧本] --> F2[生成分镜]
-        F2 --> F3[生成视频]
-        F3 --> F4[拼接成片]
+        F1[编写剧本] --> F2[分镜脚本]
+        F2 --> F3[分镜参考图]
+        F3 --> F4[分镜视频]
+        F4 --> F5[拼接成片]
     end
 ```
 

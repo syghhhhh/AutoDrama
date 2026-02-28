@@ -1,6 +1,6 @@
 {
   "project": "AutoDrama",
-  "description": "自动化短剧制作系统：系列大纲 → 角色场景设定 → 美术资产生成 → 剧集创作(剧本→分镜→视频→成片)",
+  "description": "自动化短剧制作系统：系列大纲 → 角色场景设定 → 美术资产生成 → 剧集创作(剧本→分镜脚本→分镜参考图→分镜视频→拼接成片)",
   "tasks": [
     {
       "id": 1,
@@ -23,9 +23,9 @@
         "创建 series 表 (id, user_id, title, description, art_style, world_setting, total_episodes, stage, created_at, updated_at)",
         "创建 outlines 表 (id, series_id, content, episode_outlines JSON, confirmed, created_at, updated_at)",
         "创建 characters 表 (id, series_id, name, role, appearance, personality, background, confirmed, created_at)",
-        "创建 character_images 表 (id, character_id, view_type, url, storage_path, status, created_at)",
+        "创建 character_images 表 (id, character_id, view_type, url, storage_path, task_id, status, created_at)",
         "创建 world_scenes 表 (id, series_id, name, description, atmosphere, confirmed, created_at)",
-        "创建 scene_images 表 (id, world_scene_id, url, storage_path, order_index, status, created_at)",
+        "创建 scene_images 表 (id, world_scene_id, url, storage_path, task_id, status, order_index, created_at)",
         "设置外键关系和索引",
         "编写 SQL migration 文件到 supabase/migrations/"
       ],
@@ -38,7 +38,8 @@
       "steps": [
         "创建 episodes 表 (id, series_id, episode_number, title, synopsis, stage, created_at, updated_at)",
         "创建 scripts 表 (id, episode_id, content, ai_generated, confirmed, created_at, updated_at)",
-        "创建 episode_scenes 表 (id, episode_id, order_index, scene_description, character_description, dialogue, video_status, confirmed, created_at)",
+        "创建 episode_scenes 表 (id, episode_id, order_index, scene_description, character_description, dialogue, action_description, image_status, video_status, confirmed, created_at)",
+        "创建 scene_reference_images 表 (id, episode_scene_id, url, storage_path, task_id, status, created_at)",
         "创建 scene_assets 表 (id, episode_scene_id, character_id, world_scene_id, asset_type, created_at)",
         "创建 scene_videos 表 (id, episode_scene_id, url, storage_path, duration, task_id, status, created_at)",
         "创建 episode_videos 表 (id, episode_id, url, storage_path, duration, status, created_at)",
@@ -109,39 +110,42 @@
     },
     {
       "id": 9,
-      "title": "智谱AI API 封装",
-      "description": "封装智谱AI GLM模型调用",
+      "title": "Poe API 封装",
+      "description": "封装 Poe API 大模型调用",
       "steps": [
-        "创建 lib/ai/zhipu.ts",
+        "创建 lib/ai/poe.ts",
         "实现 chat completions API 调用",
         "实现错误处理和重试逻辑",
         "编写 outline-generation prompt (大纲生成)",
         "编写 script-generation prompt (剧本创作)",
-        "编写 scene-generation prompt (分镜生成)",
+        "编写 scene-script-generation prompt (分镜脚本生成)",
         "创建 types/ai.ts 定义类型"
       ],
       "passes": false
     },
     {
       "id": 10,
-      "title": "火山引擎图片生成 API 封装",
-      "description": "封装火山引擎 Seedream 图片生成",
+      "title": "火山引擎即梦 API 封装",
+      "description": "封装火山引擎即梦图片生成",
       "steps": [
-        "创建 lib/ai/volc-image.ts",
-        "实现图片生成 API 调用",
+        "创建 lib/ai/jimeng.ts",
+        "实现 AWS Signature V4 签名",
+        "实现 CVSync2AsyncSubmitTask 提交任务",
+        "实现 CVSync2AsyncGetResult 查询结果",
         "实现错误处理和重试逻辑",
         "添加角色三视图生成函数",
         "添加场景图生成函数",
+        "添加分镜参考图生成函数",
         "添加类型定义"
       ],
       "passes": false
     },
     {
       "id": 11,
-      "title": "火山引擎视频生成 API 封装",
-      "description": "封装火山引擎 Seedance 视频生成",
+      "title": "可灵 API 封装",
+      "description": "封装可灵视频生成",
       "steps": [
-        "创建 lib/ai/volc-video.ts",
+        "创建 lib/ai/kling.ts",
         "实现视频任务创建 API",
         "实现视频任务状态查询 API",
         "实现错误处理和重试逻辑",
@@ -264,21 +268,33 @@
     },
     {
       "id": 20,
-      "title": "分镜数据访问层",
-      "description": "创建分镜的 CRUD 操作",
+      "title": "分镜脚本数据访问层",
+      "description": "创建分镜脚本的 CRUD 操作",
       "steps": [
         "创建 lib/db/episode-scenes.ts",
-        "实现 createEpisodeScenes() 批量创建分镜",
+        "实现 createEpisodeScenes() 批量创建分镜脚本",
         "实现 getEpisodeScenesByEpisodeId() 获取剧集分镜列表",
-        "实现 updateEpisodeScene() 更新分镜",
-        "实现 confirmEpisodeScene() 确认分镜",
-        "实现 confirmAllEpisodeScenes() 确认所有分镜",
+        "实现 updateEpisodeScene() 更新分镜脚本",
+        "实现 confirmEpisodeScene() 确认分镜脚本",
+        "实现 confirmAllEpisodeScenes() 确认所有分镜脚本",
         "实现 deleteEpisodeScenesByEpisodeId() 删除剧集所有分镜"
       ],
       "passes": false
     },
     {
       "id": 21,
+      "title": "分镜参考图数据访问层",
+      "description": "创建分镜参考图的数据访问",
+      "steps": [
+        "创建 lib/db/scene-reference-images.ts",
+        "实现 createSceneReferenceImage() 保存分镜参考图",
+        "实现 getSceneReferenceImageBySceneId() 获取分镜参考图",
+        "实现 Supabase Storage 上传/删除功能"
+      ],
+      "passes": false
+    },
+    {
+      "id": 22,
       "title": "分镜资产关联数据访问层",
       "description": "创建分镜资产关联的数据访问",
       "steps": [
@@ -290,7 +306,7 @@
       "passes": false
     },
     {
-      "id": 22,
+      "id": 23,
       "title": "视频数据访问层",
       "description": "创建视频的数据访问",
       "steps": [
@@ -305,7 +321,7 @@
       "passes": false
     },
     {
-      "id": 23,
+      "id": 24,
       "title": "系列 API - CRUD",
       "description": "实现系列的增删改查 API",
       "steps": [
@@ -320,20 +336,20 @@
       "passes": false
     },
     {
-      "id": 24,
+      "id": 25,
       "title": "大纲 API",
       "description": "实现大纲管理 API",
       "steps": [
         "创建 app/api/series/[id]/outline/route.ts",
         "GET 获取大纲",
         "POST 创建/更新大纲",
-        "POST /api/generate/outline AI生成大纲",
+        "POST /api/generate/outline AI生成大纲 (Poe)",
         "POST /api/series/[id]/outline/confirm 确认大纲"
       ],
       "passes": false
     },
     {
-      "id": 25,
+      "id": 26,
       "title": "角色 API",
       "description": "实现角色管理 API",
       "steps": [
@@ -348,7 +364,7 @@
       "passes": false
     },
     {
-      "id": 26,
+      "id": 27,
       "title": "场景 API",
       "description": "实现场景管理 API",
       "steps": [
@@ -363,8 +379,8 @@
       "passes": false
     },
     {
-      "id": 27,
-      "title": "美术资产生成 API",
+      "id": 28,
+      "title": "美术资产生成 API (火山引擎即梦)",
       "description": "实现美术资产生成 API",
       "steps": [
         "创建 app/api/generate/character-image/[characterId]/route.ts",
@@ -381,7 +397,7 @@
       "passes": false
     },
     {
-      "id": 28,
+      "id": 29,
       "title": "剧集 API - CRUD",
       "description": "实现剧集的增删改查 API",
       "steps": [
@@ -396,45 +412,61 @@
       "passes": false
     },
     {
-      "id": 29,
-      "title": "剧本 API",
+      "id": 30,
+      "title": "剧本 API (Poe)",
       "description": "实现剧本管理 API",
       "steps": [
         "创建 app/api/episodes/[id]/script/route.ts",
         "GET 获取剧本",
         "POST 创建/更新剧本",
-        "POST /api/generate/script AI生成剧本",
+        "POST /api/generate/script AI生成剧本 (Poe)",
         "POST /api/episodes/[id]/script/confirm 确认剧本"
       ],
       "passes": false
     },
     {
-      "id": 30,
-      "title": "分镜 API",
-      "description": "实现分镜生成和管理 API",
+      "id": 31,
+      "title": "分镜脚本 API (Poe)",
+      "description": "实现分镜脚本生成和管理 API",
       "steps": [
         "创建 app/api/episodes/[id]/scenes/route.ts",
-        "GET 获取分镜列表",
-        "POST /api/generate/scenes 生成分镜",
-        "调用智谱AI 根据剧本生成分镜",
+        "GET 获取分镜脚本列表",
+        "POST /api/generate/scene-script 生成分镜脚本 (Poe)",
+        "调用 Poe API 根据剧本生成分镜脚本",
         "关联角色和场景资产",
-        "保存分镜到数据库",
+        "保存分镜脚本到数据库",
         "创建 app/api/episode-scenes/[id]/route.ts",
-        "PATCH 更新分镜",
-        "POST /api/episode-scenes/[id]/confirm 确认分镜",
-        "POST /api/episodes/[id]/scenes/confirm-all 确认所有分镜"
+        "PATCH 更新分镜脚本",
+        "POST /api/episode-scenes/[id]/confirm 确认分镜脚本",
+        "POST /api/episodes/[id]/scenes/confirm-all 确认所有分镜脚本"
       ],
       "passes": false
     },
     {
-      "id": 31,
-      "title": "视频生成 API",
-      "description": "实现视频生成 API",
+      "id": 32,
+      "title": "分镜参考图 API (火山引擎即梦)",
+      "description": "实现分镜参考图生成 API",
+      "steps": [
+        "创建 app/api/generate/scene-reference-image/[sceneId]/route.ts",
+        "POST 为单个分镜生成参考图",
+        "创建 app/api/generate/scene-reference-image/[taskId]/route.ts",
+        "GET 查询图片生成状态",
+        "创建 app/api/generate/scene-reference-images/route.ts",
+        "POST 批量生成分镜参考图",
+        "POST /api/episode-scenes/[id]/confirm-image 确认参考图",
+        "POST /api/episodes/[id]/scene-images/confirm-all 确认所有参考图"
+      ],
+      "passes": false
+    },
+    {
+      "id": 33,
+      "title": "分镜视频 API (可灵)",
+      "description": "实现分镜视频生成 API",
       "steps": [
         "创建 app/api/generate/video/[sceneId]/route.ts",
-        "POST 为单个分镜创建视频任务",
+        "POST 为单个分镜创建视频任务 (可灵)",
         "获取分镜信息和关联资产",
-        "调用火山引擎视频生成 API",
+        "调用可灵 API 生成视频",
         "创建 app/api/generate/video/[taskId]/route.ts",
         "GET 查询视频任务状态",
         "任务成功后下载视频并上传到 Storage",
@@ -445,7 +477,7 @@
       "passes": false
     },
     {
-      "id": 32,
+      "id": 34,
       "title": "剧集成片 API",
       "description": "实现视频拼接成片 API",
       "steps": [
@@ -460,7 +492,7 @@
       "passes": false
     },
     {
-      "id": 33,
+      "id": 35,
       "title": "首页 - UI 实现",
       "description": "实现首页界面",
       "steps": [
@@ -474,7 +506,7 @@
       "passes": false
     },
     {
-      "id": 34,
+      "id": 36,
       "title": "系列列表页 - UI 实现",
       "description": "实现系列列表页面",
       "steps": [
@@ -487,7 +519,7 @@
       "passes": false
     },
     {
-      "id": 35,
+      "id": 37,
       "title": "创建系列页 - UI 实现",
       "description": "实现创建系列页面",
       "steps": [
@@ -501,7 +533,7 @@
       "passes": false
     },
     {
-      "id": 36,
+      "id": 38,
       "title": "大纲编辑器 - UI 实现",
       "description": "实现大纲编辑页面",
       "steps": [
@@ -519,7 +551,7 @@
       "passes": false
     },
     {
-      "id": 37,
+      "id": 39,
       "title": "角色设定页 - UI 实现",
       "description": "实现角色设定页面",
       "steps": [
@@ -536,7 +568,7 @@
       "passes": false
     },
     {
-      "id": 38,
+      "id": 40,
       "title": "场景设定页 - UI 实现",
       "description": "实现场景设定页面",
       "steps": [
@@ -553,7 +585,7 @@
       "passes": false
     },
     {
-      "id": 39,
+      "id": 41,
       "title": "美术资产页 - UI 实现",
       "description": "实现美术资产页面",
       "steps": [
@@ -571,7 +603,7 @@
       "passes": false
     },
     {
-      "id": 40,
+      "id": 42,
       "title": "剧集列表页 - UI 实现",
       "description": "实现剧集列表页面",
       "steps": [
@@ -579,65 +611,85 @@
         "显示系列信息（标题、风格、总集数）",
         "显示剧集卡片列表",
         "每个卡片显示：集数、标题、阶段、创建时间",
-        "点击卡片跳转到剧本编辑页",
+        "点击卡片跳转到剧本编写页",
         "显示「添加新剧集」按钮",
         "阶段指示器显示整体进度"
       ],
       "passes": false
     },
     {
-      "id": 41,
-      "title": "剧本编辑器 - UI 实现",
-      "description": "实现剧本编辑页面",
+      "id": 43,
+      "title": "剧本编写页 - UI 实现",
+      "description": "实现剧本编写页面",
       "steps": [
-        "创建 app/episodes/[id]/script/page.tsx 剧本编辑页",
+        "创建 app/episodes/[id]/script/page.tsx 剧本编写页",
         "创建 components/episode/ScriptEditor.tsx 编辑器组件",
         "显示本集梗概",
         "剧本内容输入框（多行文本）",
         "「AI辅助创作」按钮",
         "自动保存功能",
-        "「生成分镜」按钮",
-        "创建完成后跳转到分镜编辑页"
+        "「生成分镜脚本」按钮",
+        "创建完成后跳转到分镜脚本页"
       ],
       "passes": false
     },
     {
-      "id": 42,
-      "title": "分镜编辑器 - UI 实现",
-      "description": "实现分镜编辑页面",
+      "id": 44,
+      "title": "分镜脚本页 - UI 实现",
+      "description": "实现分镜脚本编辑页面",
       "steps": [
-        "创建 app/episodes/[id]/scenes/page.tsx 分镜编辑页",
-        "创建 components/episode/EpisodeSceneCard.tsx 分镜卡片",
-        "显示：序号、场景、人物描述、对话、关联资产",
+        "创建 app/episodes/[id]/scene-script/page.tsx 分镜脚本页",
+        "创建 components/episode/EpisodeSceneCard.tsx 分镜脚本卡片",
+        "显示：序号、场景、人物描述、对话、动作描述、关联资产",
         "显示关联的角色和场景缩略图",
         "支持编辑各字段",
         "支持修改关联资产",
         "显示「重新生成」按钮",
         "显示「确认」按钮",
         "创建 components/episode/EpisodeSceneList.tsx 分镜列表",
-        "底部显示「确认所有分镜」按钮"
+        "底部显示「确认所有分镜脚本」按钮",
+        "确认后跳转到分镜参考图页"
       ],
       "passes": false
     },
     {
-      "id": 43,
-      "title": "视频生成页 - UI 实现",
-      "description": "实现视频生成页面",
+      "id": 45,
+      "title": "分镜参考图页 - UI 实现",
+      "description": "实现分镜参考图页面",
+      "steps": [
+        "创建 app/episodes/[id]/scene-images/page.tsx 分镜参考图页",
+        "创建 components/episode/SceneImageCard.tsx 分镜参考图卡片",
+        "显示：分镜序号、描述、参考图/加载状态",
+        "显示图片生成状态 (pending/processing/completed/failed)",
+        "processing 状态显示进度动画",
+        "每张卡片显示「重新生成」和「确认」按钮",
+        "创建 components/episode/SceneImageList.tsx 参考图列表",
+        "顶部显示「生成所有参考图」按钮",
+        "底部显示「确认所有参考图」按钮",
+        "确认后跳转到分镜视频页"
+      ],
+      "passes": false
+    },
+    {
+      "id": 46,
+      "title": "分镜视频页 - UI 实现",
+      "description": "实现分镜视频生成页面",
       "steps": [
         "创建 app/episodes/[id]/videos/page.tsx 视频生成页",
         "创建 components/video/SceneVideoCard.tsx 视频卡片",
-        "显示：分镜序号、描述、关联资产、视频/加载状态",
+        "显示：分镜序号、描述、关联资产、参考图、视频/加载状态",
         "显示视频生成状态 (pending/processing/completed/failed)",
         "processing 状态显示进度动画",
         "每张卡片显示「重新生成」和「确认」按钮",
         "创建 components/video/SceneVideoList.tsx 视频列表",
         "顶部显示「生成所有视频」按钮",
-        "底部显示「确认所有视频」按钮"
+        "底部显示「确认所有视频」按钮",
+        "确认后跳转到成片预览页"
       ],
       "passes": false
     },
     {
-      "id": 44,
+      "id": 47,
       "title": "剧集成片页 - UI 实现",
       "description": "实现剧集成片页面",
       "steps": [
@@ -652,7 +704,7 @@
       "passes": false
     },
     {
-      "id": 45,
+      "id": 48,
       "title": "系列阶段指示器 - UI 实现",
       "description": "实现系列阶段指示器",
       "steps": [
@@ -665,12 +717,12 @@
       "passes": false
     },
     {
-      "id": 46,
+      "id": 49,
       "title": "剧集阶段指示器 - UI 实现",
       "description": "实现剧集阶段指示器",
       "steps": [
         "创建 components/episode/EpisodeStageIndicator.tsx 阶段指示器",
-        "显示阶段: draft → script → scenes → videos → completed",
+        "显示阶段: draft → script → scene_script → scene_images → videos → completed",
         "高亮当前阶段",
         "已完成阶段显示勾选",
         "点击可跳转到对应阶段页面"
@@ -678,12 +730,12 @@
       "passes": false
     },
     {
-      "id": 47,
+      "id": 50,
       "title": "实时状态更新",
       "description": "实现生成状态的实时更新",
       "steps": [
-        "实现轮询机制检查图片生成状态",
-        "实现轮询机制检查视频生成状态",
+        "实现轮询机制检查图片生成状态 (火山引擎即梦)",
+        "实现轮询机制检查视频生成状态 (可灵)",
         "processing 时每 5 秒轮询一次",
         "状态变化时自动更新 UI",
         "显示进度条或加载动画"
@@ -691,7 +743,7 @@
       "passes": false
     },
     {
-      "id": 48,
+      "id": 51,
       "title": "错误处理和边界情况",
       "description": "完善错误处理",
       "steps": [
@@ -706,7 +758,7 @@
       "passes": false
     },
     {
-      "id": 49,
+      "id": 52,
       "title": "Loading 状态",
       "description": "添加加载状态指示",
       "steps": [
@@ -720,7 +772,7 @@
       "passes": false
     },
     {
-      "id": 50,
+      "id": 53,
       "title": "响应式设计",
       "description": "适配移动端",
       "steps": [
@@ -735,13 +787,13 @@
       "passes": false
     },
     {
-      "id": 51,
+      "id": 54,
       "title": "最终测试和优化",
       "description": "完整流程测试和优化",
       "steps": [
         "运行 npm run lint 检查代码规范",
         "运行 npm run build 确保构建成功",
-        "测试完整用户流程：注册→登录→创建系列→编写大纲→设定角色场景→生成美术资产→创作剧集→下载成片",
+        "测试完整用户流程：注册→登录→创建系列→编写大纲→设定角色场景→生成美术资产→编写剧本→生成分镜脚本→生成分镜参考图→生成分镜视频→拼接成片→下载",
         "测试多剧集创作流程",
         "测试资产关联和一致性",
         "测试每一步的重新生成功能",
