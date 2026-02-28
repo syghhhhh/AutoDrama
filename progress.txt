@@ -1,5 +1,28 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 8: 认证保护中间件 ✅
+
+### 完成内容:
+- 更新 middleware.ts 使用 getUser() 替代 getSession() 进行更安全的身份验证
+- getUser() 会向 Supabase Auth 服务器验证 JWT token
+- 保护 /series 和 /episodes 路由，未登录用户重定向到 /login
+- 已登录用户访问 /login 和 /register 时重定向到首页
+- 保留 redirect 参数用于登录后返回原页面
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 备注:
+- 完整功能测试需要配置真实的 Supabase 项目和用户账号
+- 测试场景：未登录访问受保护页面 → 重定向到登录页
+- 测试场景：已登录访问登录/注册页 → 重定向到首页
+
+### 下一步:
+- 执行任务 9: Poe API 封装
+
+---
+
 ## 2026-02-28 - Task 7: 用户认证 - 登出功能 ✅
 
 ### 完成内容:
