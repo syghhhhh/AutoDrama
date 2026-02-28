@@ -1,5 +1,20 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 3: Supabase 数据库 Schema - 剧集相关 ✅
+
+### 已完成:
+- 创建 episodes, scripts, episode_scenes, scene_reference_images, scene_assets, scene_videos, episode_videos 表
+- 设置外键关系、索引和 RLS 策略
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 下一步:
+- 执行任务 4: Supabase 客户端封装
+
+---
+
 ## 2026-02-28 - Task 2: Supabase 数据库 Schema - 系列相关 ✅
 
 ### 已完成:

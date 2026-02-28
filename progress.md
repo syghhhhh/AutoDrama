@@ -1,5 +1,27 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 3: Supabase 数据库 Schema - 剧集相关 ✅
+
+### 已完成:
+- 创建 episodes 表 (id, series_id, episode_number, title, synopsis, stage, created_at, updated_at)
+- 创建 scripts 表 (id, episode_id, content, ai_generated, confirmed, created_at, updated_at)
+- 创建 episode_scenes 表 (分镜脚本)
+- 创建 scene_reference_images 表 (分镜参考图)
+- 创建 scene_assets 表 (分镜资产关联)
+- 创建 scene_videos 表 (分镜视频)
+- 创建 episode_videos 表 (剧集成片)
+- 设置外键关系和索引
+- 配置 RLS 策略
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 下一步:
+- 执行任务 4: Supabase 客户端封装
+
+---
+
 ## 2026-02-28 - Task 2: Supabase 数据库 Schema - 系列相关 ✅
 
 ### 已完成:

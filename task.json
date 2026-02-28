@@ -46,7 +46,7 @@
         "创建 Storage bucket: drama-media",
         "编写 SQL migration 文件"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 4,
