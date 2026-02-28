@@ -1,5 +1,27 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 2: Supabase 数据库 Schema - 系列相关 ✅
+
+### 已完成:
+- 创建 series 表 (id, user_id, title, description, art_style, world_setting, total_episodes, stage, created_at, updated_at)
+- 创建 outlines 表 (id, series_id, content, episode_outlines JSON, confirmed, created_at, updated_at)
+- 创建 characters 表 (id, series_id, name, role, appearance, personality, background, confirmed, created_at)
+- 创建 character_images 表 (id, character_id, view_type, url, storage_path, task_id, status, created_at)
+- 创建 world_scenes 表 (id, series_id, name, description, atmosphere, confirmed, created_at)
+- 创建 scene_images 表 (id, world_scene_id, url, storage_path, task_id, status, order_index, created_at)
+- 设置外键关系和索引
+- 配置 RLS 策略
+- 创建 storage bucket (drama-media)
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 下一步:
+- 执行任务 3: Supabase 数据库 Schema - 剧集相关
+
+---
+
 ## 2026-02-28 - Task 1: 项目初始化 ✅
 
 ### 已完成:
