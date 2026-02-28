@@ -1,5 +1,35 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - 架构更新完成
+
+### 已完成:
+- 根据用户需求更新项目架构
+- 调整剧集创作流程：剧本 → 分镜脚本 → 分镜参考图 → 分镜视频 → 拼接成片
+- 更新 API 集成：
+  - 大模型：Poe API
+  - 图片生成：火山引擎即梦 API
+  - 视频生成：可灵 API
+- 更新 architecture.md - 新增分镜参考图阶段、更新 API 文档
+- 更新 task.json - 任务数 51 → 54
+- 更新 task_plan.md - 更新流程图和技术架构
+- 更新 CLAUDE.md - 更新核心概念和 API 说明
+- Git 提交 (59adb00)
+
+### 新增数据表/字段:
+- scene_reference_images 表 (分镜参考图)
+- character_images/scene_images 新增 task_id, status 字段
+- episode_scenes 新增 action_description, image_status 字段
+
+### 剧集阶段更新:
+- draft → script → scene_script → scene_images → videos → completed
+
+### 下一步:
+- 运行 `./init.sh` 创建 Next.js 项目
+- 配置 Supabase 和 API 密钥
+- 开始执行任务 1
+
+---
+
 ## 2026-02-27 - 架构重构完成
 
 ### 已完成:
@@ -15,19 +45,6 @@
 2. **大纲阶段** - 美术风格、世界观、角色设定、场景设定、剧集规划
 3. **美术资产阶段** - 角色三视图(正/侧/背面)、场景参考图
 4. **剧集创作** - 剧本 → 分镜 → 视频 → 成片
-
-### 新增数据表:
-- series, outlines
-- characters, character_images
-- world_scenes, scene_images
-- episodes, scripts
-- episode_scenes, scene_assets
-- scene_videos, episode_videos
-
-### 下一步:
-- 运行 `./init.sh` 创建 Next.js 项目
-- 配置 Supabase 和 API 密钥
-- 开始执行任务 1
 
 ---
 
