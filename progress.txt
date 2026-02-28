@@ -1,5 +1,33 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 9: Poe API 封装 ✅
+
+### 完成内容:
+- 创建 types/ai.ts 定义 AI 相关类型
+- 创建 lib/ai/poe.ts 实现 Poe API 客户端
+- 实现 chat completions API 调用
+- 实现错误处理和指数退避重试逻辑
+- 创建 lib/ai/prompts.ts 包含三种 prompt 模板:
+  - outline-generation prompt (大纲生成)
+  - script-generation prompt (剧本创作)
+  - scene-script-generation prompt (分镜脚本生成)
+- 创建 lib/ai/index.ts 导出所有 AI 相关功能
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 备注:
+- Poe API 使用 OpenAI 兼容的 chat completions 接口
+- 支持多种模型: gemini-3-flash, gpt-4o, gpt-4o-mini, claude-3-5-sonnet, claude-3-opus
+- 重试机制支持: rate_limit, timeout, server_error, overloaded 等错误
+- 所有 prompt 模板都输出 JSON 格式便于解析
+
+### 下一步:
+- 执行任务 10: 火山引擎即梦 API 封装
+
+---
+
 ## 2026-02-28 - Task 8: 认证保护中间件 ✅
 
 ### 完成内容:

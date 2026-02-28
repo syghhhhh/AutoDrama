@@ -121,7 +121,7 @@
         "编写 scene-script-generation prompt (分镜脚本生成)",
         "创建 types/ai.ts 定义类型"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": 10,
