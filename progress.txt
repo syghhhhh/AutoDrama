@@ -1,5 +1,23 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 7: 用户认证 - 登出功能 ✅
+
+### 完成内容:
+- 创建 components/auth/LogoutButton.tsx 登出按钮组件
+- 实现登出逻辑 (Supabase Auth signOut)
+- 登出后跳转到登录页
+- 支持三种样式变体: primary, secondary, text
+- 添加加载状态显示
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 下一步:
+- 执行任务 8: 认证保护中间件
+
+---
+
 ## 2026-02-28 - Task 6: 用户认证 - 注册页面 ✅
 
 ### 完成内容:
