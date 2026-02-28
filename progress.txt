@@ -1,5 +1,36 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 10: 火山引擎即梦 API 封装 ✅
+
+### 完成内容:
+- 创建 lib/ai/jimeng.ts 实现火山引擎即梦 API 客户端
+- 实现 AWS Signature V4 签名认证
+- 实现 CVSync2AsyncSubmitTask 提交任务
+- 实现 CVSync2AsyncGetResult 查询结果
+- 实现错误处理和指数退避重试逻辑
+- 实现轮询机制等待图片生成结果
+- 添加 generateCharacterImage() 角色三视图生成函数
+- 添加 generateSceneImage() 场景图生成函数
+- 添加 generateSceneReferenceImage() 分镜参考图生成函数
+- 更新 types/ai.ts 添加即梦 API 相关类型定义
+- 更新 .env.local 环境变量名以匹配代码
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 备注:
+- 火山引擎即梦 API 使用 AWS Signature V4 签名认证
+- 默认使用 jimeng_t2i_v40 模型
+- 轮询间隔 5 秒，最多轮询 60 次（5 分钟超时）
+- 支持角色三视图（正面/侧面/背面）、场景图、分镜参考图生成
+- 环境变量: VOLCENGINE_ACCESS_KEY, VOLCENGINE_SECRET_KEY
+
+### 下一步:
+- 执行任务 11: 可灵 API 封装
+
+---
+
 ## 2026-02-28 - Task 9: Poe API 封装 ✅
 
 ### 完成内容:
