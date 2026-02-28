@@ -1,5 +1,24 @@
 # AutoDrama - 进度记录
 
+## 2026-02-28 - Task 4: Supabase 客户端封装 ✅
+
+### 完成内容:
+- 创建 lib/supabase/server.ts (服务端客户端)
+- 创建 lib/supabase/client.ts (浏览器客户端)
+- 创建 lib/supabase/middleware.ts (中间件客户端)
+- 创建 src/middleware.ts (根中间件，包含路由保护逻辑)
+- 创建 types/database.ts (数据库类型定义)
+- 更新 .gitignore 以允许 src/lib 目录
+
+### 测试:
+- ✅ npm run lint 通过
+- ✅ npm run build 成功
+
+### 下一步:
+- 执行任务 5: 用户认证 - 登录页面
+
+---
+
 ## 2026-02-28 - 文档优化：项目定位与工作流统一 ✅
 
 ### 完成内容:
